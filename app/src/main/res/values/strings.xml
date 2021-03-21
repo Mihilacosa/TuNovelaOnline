@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">TuNovelaOnline</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="titulo">Titulo</string>
+    <string name="rese_a">Reseña</string>
+    <string name="portada2">Portada 2</string>
+    <string name="portada3">Portada 3</string>
+    <string name="portada4">Portada 4</string>
+    <string name="titulo_2">Titulo 2</string>
+    <string name="reseña2">Reseña 2</string>
+    <string name="titulo_3">Titulo 3</string>
+    <string name="reseña3">Reseña 3</string>
+    <string name="titulo_4">Titulo 4</string>
+    <string name="reseña4">Reseña 4</string>
+    <string name="titulo_novela">Titulo novela</string>
+    <string name="portada_novela">Portada novela</string>
+    <string name="rese_a_novela">Reseña</string>
+    <string name="contenido_reseña">Contenido reseña</string>
+    <string name="capitulos">Capítulos</string>
+    <string name="registrarse">Registrarse</string>
+    <string name="inicio_de_sesi_n">Inicio de sesión</string>
+    <string name="email">Email</string>
+    <string name="contrase_a">Contraseña</string>
+    <string name="soy_humano">Soy Humano</string>
+    <string name="iniciar_sesi_n">Iniciar sesión</string>
+    <string name="no_tienes_cuanta">¿No tienes cuanta?</string>
+    <string name="crear_cuenta">Crear cuenta</string>
+    <string name="usuario">Usuario</string>
+    <string name="contrase_a_registro">Contraseña</string>
+    <string name="confirmar_contrase_a">Confirmar contraseña</string>
+    <string name="sexo">Sexo</string>
+    <string name="hombre">Hombre</string>
+    <string name="mujer">Mujer</string>
+    <string name="otro">Otro</string>
+    <string name="crear_cuenta_registro">Crear cuenta</string>
+    <string name="tienes_cuenta">¿Tienes cuenta?</string>
+    <string name="bt_iniciar_sesi_n_registro">Iniciar sesión</string>
+    <string name="inicio_menu">Inicio</string>
+    <string name="inicio_de_sesi_n_menu">Inicio de sesión</string>
+    <string name="registrarse_menu">Registrarse</string>
+    <string name="espa_ol">Español</string>
+    <string name="ingles">Ingles</string>
+    <string name="portada1">Portada 1</string>
+    <string name="cosas">Cosas</string>
+    <string name="titulo_capitulo">Titulo capitulo</string>
+    <string name="contenido_capitulo">Contenido capitulo</string>
+    <string name="indice">Indice</string>
+    <string name="nombre">Nombre</string>
+    <string name="portada_de_la_novela">Portada de la novela</string>
+    <string name="mis_novelas">Mis Novelas</string>
+    <string name="subir_novela">Subir novela</string>
+    <string name="subir_capitulo">Subir capitulo</string>
+    <string name="cerrar_sesi_n">Cerrar sesión</string>
+</resources>

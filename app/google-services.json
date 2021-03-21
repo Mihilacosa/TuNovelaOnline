@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "498302478909",
+    "firebase_url": "https://tunolelaonline.firebaseio.com",
+    "project_id": "tunolelaonline",
+    "storage_bucket": "tunolelaonline.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498302478909:android:c720bf7a04e0ec27b45854",
+        "android_client_info": {
+          "package_name": "com.example.pruebas"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOXrumZUgvMXpqkT3A0fTy7flqpLjc0mw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498302478909:android:8400d1bb0547d2eeb45854",
+        "android_client_info": {
+          "package_name": "com.example.tarea_1"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOXrumZUgvMXpqkT3A0fTy7flqpLjc0mw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:498302478909:android:0a6d8ce2c8cb7edbb45854",
+        "android_client_info": {
+          "package_name": "com.example.tunovelaonline"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOXrumZUgvMXpqkT3A0fTy7flqpLjc0mw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "498302478909-6i6efj90qmdhb2ft4eccs2ht0bnd7mgn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
