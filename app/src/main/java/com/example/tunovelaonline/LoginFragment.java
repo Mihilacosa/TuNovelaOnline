@@ -15,12 +15,15 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Novela;
+import com.example.tunovelaonline.pojos.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -30,13 +33,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
+import java.util.ArrayList;
+
 import static android.content.Context.MODE_PRIVATE;
 
 public class LoginFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Usuario usuario = null;
 
     private EditText email;
     private EditText contrasena;
     private Button Login;
+    String Email;
     private FirebaseAuth mAuth;
     CheckBox humano;
     Context contexto;
@@ -67,18 +84,15 @@ public class LoginFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if(humano.isChecked()) {
-                    String Email = email.getText().toString();
+                    Email = email.getText().toString();
                     String Contrasena = contrasena.getText().toString();
 
                     mAuth.signInWithEmailAndPassword(Email, Contrasena).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                EnvioLogin("https://tnowebservice.000webhostapp.com/Login.php?email=" + Email);
 
-                                Intent i = new Intent(getContext(), MainActivity.class);
-
-                                startActivity(i);
+                                new Thread(new EnvioLogin()).start();
 
                             } else {
                                 Toast.makeText(getActivity(), "Email o contraseña incorrectos", Toast.LENGTH_SHORT).show();
@@ -125,6 +139,54 @@ public class LoginFragment extends Fragment {
         });
         RequestQueue requestQueue = Volley.newRequestQueue(getContext());
         requestQueue.add(jsonArrayRequest);
+    }
+
+    class EnvioLogin implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("login usuario");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(Email);
+
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                usuario = (Usuario) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = datos_usu.edit();
+
+                        editor.putString("usuario", usuario.getUsuario());
+                        editor.putString("id", usuario.getIdUsuario().toString());
+                        editor.putString("email", usuario.getEmail());
+                        editor.apply();
+
+                        Intent i = new Intent(getContext(), MainActivity.class);
+
+                        startActivity(i);
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void Registrarse(){

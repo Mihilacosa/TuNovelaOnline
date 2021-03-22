@@ -8,14 +8,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tunovelaonline.pojos.Capitulo;
+
 import java.util.ArrayList;
 
 public class AdaptadorCapitulos extends RecyclerView.Adapter<AdaptadorCapitulos.ViewHolderCapitulos> implements View.OnClickListener {
 
-    ArrayList<ListaCapitulos> listaCapitulos;
+    ArrayList<Capitulo> listaCapitulos;
     private View.OnClickListener listener;
 
-    public AdaptadorCapitulos(ArrayList<ListaCapitulos> listaCapitulos) {
+    public AdaptadorCapitulos(ArrayList<Capitulo> listaCapitulos) {
         this.listaCapitulos = listaCapitulos;
     }
 
@@ -30,8 +32,8 @@ public class AdaptadorCapitulos extends RecyclerView.Adapter<AdaptadorCapitulos.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolderCapitulos holder, int position) {
-        holder.capitulos.setText(listaCapitulos.get(position).getCapitulo());
-        holder.capitulos.setId(Integer.parseInt(listaCapitulos.get(position).getId()));
+        holder.capitulos.setText("Capítulo: " + listaCapitulos.get(position).getNumCapitulo() + " - " + listaCapitulos.get(position).getTitulo());
+        holder.capitulos.setId(Integer.parseInt(listaCapitulos.get(position).getIdCapitulo().toString()));
     }
 
     @Override

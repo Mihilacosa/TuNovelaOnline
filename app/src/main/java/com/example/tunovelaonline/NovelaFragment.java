@@ -25,6 +25,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Capitulo;
+import com.example.tunovelaonline.pojos.Novela;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -37,17 +39,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class NovelaFragment extends Fragment {
-    public static final String ID_CAPITULO = "com.com.example.tarea_1.ID_CAPITULO";
-    public static final String ID_NOVELA = "com.com.example.tarea_1.ID_NOVELA";
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Novela novela;
+
     private TextView Titulo_novela;
     private TextView resena;
     private ImageView portada, imgDespliegue;
     private ListView Lista_caps;
-    private ArrayList<ListaCapitulos> Lista = new ArrayList<>();
+    private ArrayList<Capitulo> Lista = new ArrayList<>();
     private ArrayList<Integer> Capitulos_id = new ArrayList<>();
     private String id_capitulo;
     private String id_novela;
@@ -98,23 +109,10 @@ public class NovelaFragment extends Fragment {
             }
         }
 
-/*
-        Intent i = getIntent();
-        onNewIntent(getIntent());
-
-        if(i.getStringExtra(MainActivity.ID_NOVELA).equals("")){
-            id_novela = i.getStringExtra(Capitulo.ID_NOVELA);
-        }
-        if(!i.getStringExtra(MainActivity.ID_NOVELA).equals("")){
-            id_novela = i.getStringExtra(MainActivity.ID_NOVELA);
-        }
-*/
-
         Bundle bundle = this.getArguments();
         id_novela = bundle.getString("id");
 
-        CargarNovela("https://tnowebservice.000webhostapp.com/Novela_seleccionada.php?id_novela=" + id_novela);
-        CargarCapitulos("https://tnowebservice.000webhostapp.com/Lista_caps.php?id_novela=" + id_novela);
+        new Thread(new CargarNovela()).start();
 
         Titulo_novela = v.findViewById(R.id.Titulo_dif);
         resena = v.findViewById(R.id.Resena_novela_selec);
@@ -138,122 +136,138 @@ public class NovelaFragment extends Fragment {
 
         return v;
     }
-/*
-    @Override
-    public void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            if (extras.containsKey("ID_NOVELA")) {
-                id_novela = extras.getString("ID_NOVELA");
-            }
-        }
 
-
-    }
-*/
     //carga novela y capitulos
 
-    private void CargarNovela(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        Titulo_novela.setText(new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8"));
-                        resena.setText(new String(jsonObject.getString("resena").getBytes("ISO-8859-1"), "UTF-8"));
-                        Picasso.get().load(jsonObject.getString("portada")).into(portada);
+    class CargarNovela implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-                        if(jsonObject.getString("nombre_alternativo").isEmpty()){
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar novela");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_novela);
+
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                novela = (Novela) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Titulo_novela.setText(novela.getTitulo());
+                        resena.setText(novela.getResena());
+                        Picasso.get().load(novela.getPortada()).into(portada);
+
+                        if(novela.getNombreAlternativo() == null || novela.getNombreAlternativo().isEmpty()){
 
                         }else {
                             tit_alt.setVisibility(View.VISIBLE);
-                            tit_alt.setText(tit_alt.getText() + new String(jsonObject.getString("nombre_alternativo").getBytes("ISO-8859-1"), "UTF-8"));
+                            tit_alt.setText(tit_alt.getText() + novela.getNombreAlternativo());
                         }
 
-                        autor.setText(autor.getText() + new String(jsonObject.getString("autor").getBytes("ISO-8859-1"), "UTF-8"));
+                        autor.setText(autor.getText() + novela.getAutor());
 
-                        if(jsonObject.getString("artista").isEmpty()){
+                        if(novela.getArtista() == null || novela.getArtista().isEmpty()){
 
                         }else {
                             artista.setVisibility(View.VISIBLE);
-                            artista.setText(artista.getText() + new String(jsonObject.getString("artista").getBytes("ISO-8859-1"), "UTF-8"));
+                            artista.setText(artista.getText() + novela.getArtista());
                         }
 
 
-                        if(jsonObject.getString("traductor").isEmpty()){
+                        if(novela.getTraductor() == null || novela.getTraductor().isEmpty()){
 
                         }else {
                             traductor.setVisibility(View.VISIBLE);
-                            traductor.setText(traductor.getText() + new String(jsonObject.getString("traductor").getBytes("ISO-8859-1"), "UTF-8"));
+                            traductor.setText(traductor.getText() + novela.getTraductor());
                         }
 
-                        genero.setText(genero.getText() + new String(jsonObject.getString("genero").getBytes("ISO-8859-1"), "UTF-8"));
-                        fecha.setText(fecha.getText() + new String(jsonObject.getString("fecha_subida").getBytes("ISO-8859-1"), "UTF-8"));
-
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR DE CARGA DE NOVELA SELECCIONADA", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
-    }
-
-    private void CargarCapitulos(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        String capitulo = "Capitulo: " + jsonObject.getString("num_capitulo") + " - " + new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8");
-                        String id_cap = jsonObject.getString("id_capitulo");
-                        Integer id_cap_int = Integer.valueOf(jsonObject.getString("id_capitulo"));
-                        Capitulos_id.add(id_cap_int);
-                        Lista.add(new ListaCapitulos(capitulo, id_cap));
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                recyclerCapitulos = v.findViewById(R.id.RecyclerCapitulos);
-                recyclerCapitulos.setLayoutManager(new LinearLayoutManager(getContext()));
-
-                AdaptadorCapitulos adapter = new AdaptadorCapitulos(Lista);
-
-                adapter.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getId();
-
-                        Bundle bundle = new Bundle();
-                        bundle.putString("id_nov",id_novela);
-                        bundle.putString("id_cap",id_capitulo);
-                        bundle.putSerializable("ARRAYLIST", Capitulos_id);
-                        CapituloFragment capitulo = new CapituloFragment();
-                        capitulo.setArguments(bundle);
-                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).commit();
+                        genero.setText(genero.getText() + novela.getGenero());
+                        fecha.setText(fecha.getText() + novela.getFechaSubida().toString());
                     }
                 });
 
-                recyclerCapitulos.setAdapter(adapter);
+                socketCliente.close();
+
+                new Thread(new CargarCapitulos()).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR DE CARGA DE NOVELA SELECCIONADA", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class CargarCapitulos implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar capitulos");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_novela);
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                Lista = (ArrayList<Capitulo>) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Iterator<Capitulo> caps = Lista.iterator();
+                        while(caps.hasNext()){
+                            Capitulos_id.add(caps.next().getIdCapitulo());
+                        }
+
+                        recyclerCapitulos = v.findViewById(R.id.RecyclerCapitulos);
+                        recyclerCapitulos.setLayoutManager(new LinearLayoutManager(getContext()));
+
+                        AdaptadorCapitulos adapter = new AdaptadorCapitulos(Lista);
+
+                        adapter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getIdCapitulo().toString();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("id_nov",id_novela);
+                                bundle.putString("id_cap",id_capitulo);
+                                bundle.putSerializable("ARRAYLIST", Capitulos_id);
+                                CapituloFragment capitulo = new CapituloFragment();
+                                capitulo.setArguments(bundle);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).commit();
+                            }
+                        });
+
+                        recyclerCapitulos.setAdapter(adapter);
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
+        }
     }
 }

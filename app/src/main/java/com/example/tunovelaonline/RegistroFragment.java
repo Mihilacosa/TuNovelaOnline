@@ -24,19 +24,32 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Novela;
+import com.example.tunovelaonline.pojos.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 public class RegistroFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Usuario usuario2;
 
     private EditText NuevoUsuario;
     private EditText NuevoEmail;
@@ -106,11 +119,7 @@ public class RegistroFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                EnvioInfoCrearCuenta("https://tnowebservice.000webhostapp.com/NuevoUsuario.php");
-
-                                Intent i = new Intent(getContext(), MainActivity.class);
-
-                                startActivity(i);
+                                new Thread(new EnvioInfoCrearCuenta()).start();
                             } else {
                                 Toast.makeText(getContext(), "El email esta siendo usado", Toast.LENGTH_SHORT).show();
                             }
@@ -123,37 +132,6 @@ public class RegistroFragment extends Fragment {
         return v;
     }
 
-    private void EnvioLogin(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-
-                SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = datos_usu.edit();
-
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        editor.putString("usuario", jsonObject.getString("usuario"));
-                        editor.putString("id", jsonObject.getString("id_usuario"));
-                        editor.putString("email", jsonObject.getString("email"));
-                        editor.apply();
-                    } catch (JSONException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR AL COMPROBAR DATOS", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
-    }
-
     //Moverse a iniciar sesión
 
     public void InicioSesionReg(){
@@ -163,31 +141,86 @@ public class RegistroFragment extends Fragment {
 
     //Enviar datos para crear cuenta
 
-    private void EnvioInfoCrearCuenta(String URL) {
+    class EnvioInfoCrearCuenta implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                EnvioLogin("https://tnowebservice.000webhostapp.com/Login.php?email=" + email);
-                Toast.makeText(getContext(), "Cuenta creada", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("usuario", NuevoUsuario.getText().toString());
-                parametros.put("email", NuevoEmail.getText().toString());
-                parametros.put("contrasena", NuevaContrasena.getText().toString());
-                return parametros;
-            }
-        };
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("nuevo usuario");
 
+                Usuario usuario = new Usuario();
+
+                ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
+                oos.writeObject(usuario);
+
+
+                os.close();
+                dos.close();
+                oos.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new Thread(new EnvioLogin()).start();
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
+    class EnvioLogin implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("login usuario");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(email);
+
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                usuario2 = (Usuario) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = datos_usu.edit();
+
+                        editor.putString("usuario", usuario2.getUsuario());
+                        editor.putString("id", usuario2.getIdUsuario().toString());
+                        editor.putString("email", usuario2.getEmail());
+                        editor.apply();
+
+                        Intent i = new Intent(getContext(), MainActivity.class);
+
+                        startActivity(i);
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

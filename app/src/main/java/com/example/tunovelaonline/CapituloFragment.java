@@ -2,38 +2,46 @@ package com.example.tunovelaonline;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.material.navigation.NavigationView;
+import com.example.tunovelaonline.pojos.Capitulo;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class CapituloFragment extends Fragment {
-    public static final String ID_NOVELA = "com.com.example.tarea_1.ID_NOVELA";
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Capitulo capitulo;
+
     private TextView Titulo;
     private TextView Contenido;
     private String id_novela;
@@ -95,7 +103,8 @@ public class CapituloFragment extends Fragment {
         Titulo = v.findViewById(R.id.Titulo_cap);
         Contenido = v.findViewById(R.id.Contenido_cap);
 
-        CargarCapitulo("https://tnowebservice.000webhostapp.com/Capitulo_seleccionado.php?id_capitulo=" + id_capitulo);
+
+        new Thread(new CargarCapitulo()).start();
 
         Anterior.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -108,7 +117,7 @@ public class CapituloFragment extends Fragment {
                 posicion = posicion - 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
-                CargarCapitulo("https://tnowebservice.000webhostapp.com/Capitulo_seleccionado.php?id_capitulo=" + id_capitulo);
+                new Thread(new CargarCapitulo()).start();
 
                 if(posicion == 0){
                     Anterior.setEnabled(false);
@@ -131,7 +140,7 @@ public class CapituloFragment extends Fragment {
                 posicion = posicion - 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
-                CargarCapitulo("https://tnowebservice.000webhostapp.com/Capitulo_seleccionado.php?id_capitulo=" + id_capitulo);
+                new Thread(new CargarCapitulo()).start();
 
                 if(posicion == 0){
                     Anterior2.setEnabled(false);
@@ -149,7 +158,7 @@ public class CapituloFragment extends Fragment {
                 posicion = posicion + 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
-                CargarCapitulo("https://tnowebservice.000webhostapp.com/Capitulo_seleccionado.php?id_capitulo=" + id_capitulo);
+                new Thread(new CargarCapitulo()).start();
 
                 if(posicion == cap_max){
                     Siguiente.setEnabled(false);
@@ -171,7 +180,7 @@ public class CapituloFragment extends Fragment {
                 posicion = posicion + 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
-                CargarCapitulo("https://tnowebservice.000webhostapp.com/Capitulo_seleccionado.php?id_capitulo=" + id_capitulo);
+                new Thread(new CargarCapitulo()).start();
 
                 if(posicion == cap_max){
                     Siguiente2.setEnabled(false);
@@ -214,29 +223,41 @@ public class CapituloFragment extends Fragment {
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
     }
 
+    class CargarCapitulo implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-    private void CargarCapitulo(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        Titulo.setText("Capítulo: " + jsonObject.getString("num_capitulo") + " - " + new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8"));
-                        Contenido.setText(new String(jsonObject.getString("contenido").getBytes("ISO-8859-1"), "UTF-8"));
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar capitulo");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_capitulo);
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                capitulo = (Capitulo) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Titulo.setText("Capítulo: " + capitulo.getNumCapitulo() + " - " + capitulo.getTitulo());
+                        Contenido.setText(capitulo.getContenido());
                     }
-                }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR DE CARGA DEL CAPITULO SELECCIONADA", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
+        }
     }
 }

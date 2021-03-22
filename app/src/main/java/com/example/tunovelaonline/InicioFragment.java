@@ -17,26 +17,24 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Novela;
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 
 public class InicioFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
 
     private  String usuario = "";
-    String titulo, id, imagen, resena;
 
-    ArrayList<ListaNovelas> listaNovelas = new ArrayList<>();
+    ArrayList<Novela> listaNovelas = new ArrayList();
     RecyclerView recyclerNovelas;
     AdaptadorNovelas adapter;
 
@@ -48,19 +46,8 @@ public class InicioFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_inicio, container, false);
-/*
-        final TextView textView = view.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-*/
-        //View v = inflater.inflate(R.layout.nav_header, container, false);
-        //name = v.findViewById(R.id.usuName);
 
-        Cargar("https://tnowebservice.000webhostapp.com/UltimasActualizaciones.php");
+        new Thread(new Cargar()).start();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
@@ -74,50 +61,54 @@ public class InicioFragment extends Fragment {
         return view;
     }
 
-    private void Cargar(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        titulo = new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8");
-                        id = jsonObject.getString("id_novela");
-                        imagen = jsonObject.getString("portada");
-                        resena = new String(jsonObject.getString("resena").getBytes("ISO-8859-1"), "UTF-8");
-                        listaNovelas.add(new ListaNovelas(titulo, id, imagen, resena));
+    class Cargar implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-                recyclerNovelas = view.findViewById(R.id.ReyclerId);
-                recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar ultimas actualizaciones");
 
-                adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
-                adapter.setOnClickListener(new View.OnClickListener() {
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                listaNovelas = (ArrayList<Novela>) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        String id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getId();
+                    public void run() {
+                        recyclerNovelas = view.findViewById(R.id.ReyclerId);
+                        recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                        Bundle bundle = new Bundle();
-                        bundle.putString("id",id_N);
-                        novela = new NovelaFragment();
-                        novela.setArguments(bundle);
-                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                        adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
+                        adapter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+
+                                Bundle bundle = new Bundle();
+                                bundle.putString("id",id_N);
+                                novela = new NovelaFragment();
+                                novela.setArguments(bundle);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                            }
+                        });
+                        recyclerNovelas.setAdapter(adapter);
                     }
                 });
-                recyclerNovelas.setAdapter(adapter);
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR DE CARGA DE NOVELA", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
+        }
     }
 
     @Override
