@@ -1,10 +1,12 @@
 package com.example.tunovelaonline;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,29 +28,33 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Novela;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ModificarNovelasFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
     public static final String ID_NOVELA = "com.com.example.tarea_1.ID_NOVELA";
 
+    ArrayList<Novela> listaNovelas = new ArrayList();
     private  String usuario = "";
     String titulo, id, imagen, resena, id_usuario;
 
-    MenuItem itemlt;
-    MenuItem itemln;
-    MenuItem itemr;
-    MenuItem subir_novelas;
-
-    ArrayList<ListaNovelas> listaNovelas = new ArrayList<>();
     RecyclerView recyclerNovelas;
     AdaptadorNovelasModificar adapter;
 
@@ -70,63 +76,91 @@ public class ModificarNovelasFragment extends Fragment {
             }
         }
 
-        Cargar("https://tnowebservice.000webhostapp.com/NovelasModificar.php?id_usuario=" + id_usuario);
-
+        new Thread(new misNovelas()).start();
         return v;
     }
 
 
-    private void Cargar(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        titulo = new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8");
-                        id = jsonObject.getString("id_novela");
-                        imagen = jsonObject.getString("portada");
-                        resena = new String(jsonObject.getString("resena").getBytes("ISO-8859-1"), "UTF-8");
-                        listaNovelas.add(new ListaNovelas(titulo, id, imagen, resena));
+    class misNovelas implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mis novelas");
+
+                dos.writeUTF(id_usuario);
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                listaNovelas = (ArrayList<Novela>) ois.readObject();
+
+                if(listaNovelas.isEmpty()){
+                    Toast.makeText(getContext(), "No tiene novelas subidas", Toast.LENGTH_SHORT).show();
+
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,new InicioFragment()).commit();
                 }
-                recyclerNovelas = v.findViewById(R.id.RecyclerModificar);
-                recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                adapter = new AdaptadorNovelasModificar(listaNovelas, getContext());
-                adapter.setOnClickListener(new View.OnClickListener() {
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
-                    public void onClick(View v) {
-                        String id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getId();
+                    public void run() {
+                        recyclerNovelas = v.findViewById(R.id.RecyclerModificar);
+                        recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                        Bundle bundle = new Bundle();
-                        bundle.putString("id",id_N);
-                        novela = new ModificarNovelaFragment();
-                        novela.setArguments(bundle);
-                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                        adapter = new AdaptadorNovelasModificar(listaNovelas, getActivity().getApplicationContext());
+                        adapter.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                String id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+
+                                final CharSequence[] options = { "Modificar novela", "Modificar capitulo", "Eliminar", "Cancelar" };
+                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                builder.setTitle("Opciones");
+                                builder.setItems(options, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int item) {
+                                        if (options[item].equals("Modificar novela"))
+                                        {
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("id",id_N);
+                                            novela = new ModificarNovelaFragment();
+                                            novela.setArguments(bundle);
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                                        }
+                                        else if (options[item].equals("Modificar capitulo"))
+                                        {
+
+                                        }
+                                        else if (options[item].equals("Eliminar"))
+                                        {
+
+                                        }
+                                        else if (options[item].equals("Cancelar")) {
+                                            dialog.dismiss();
+                                        }
+                                    }
+                                });
+                                builder.show();
+
+                            }
+                        });
+                        recyclerNovelas.setAdapter(adapter);
                     }
                 });
 
-
-                recyclerNovelas.setAdapter(adapter);
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                Toast.makeText(getContext(), "No tiene novelas subidas", Toast.LENGTH_SHORT).show();
-
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,new InicioFragment()).commit();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
+        }
     }
-
 
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {

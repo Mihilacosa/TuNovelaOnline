@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -152,6 +153,9 @@ public class RegistroFragment extends Fragment {
                 dos.writeUTF("nuevo usuario");
 
                 Usuario usuario = new Usuario();
+                usuario.setUsuario(NuevoUsuario.getText().toString());
+                usuario.setContrasena(NuevaContrasena.getText().toString());
+                usuario.setEmail(email);
 
                 ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
                 oos.writeObject(usuario);
@@ -161,14 +165,19 @@ public class RegistroFragment extends Fragment {
                 dos.close();
                 oos.close();
 
+                socketCliente.close();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        new Thread(new EnvioLogin()).start();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                new Thread(new EnvioLogin()).start();
+                            }
+                        }, 1000);
                     }
                 });
 
-                socketCliente.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

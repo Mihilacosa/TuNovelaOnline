@@ -110,37 +110,6 @@ public class LoginFragment extends Fragment {
         return v;
     }
 
-    private void EnvioLogin(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-
-                SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
-                SharedPreferences.Editor editor = datos_usu.edit();
-
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        editor.putString("usuario", jsonObject.getString("usuario"));
-                        editor.putString("id", jsonObject.getString("id_usuario"));
-                        editor.putString("email", jsonObject.getString("email"));
-                        editor.apply();
-                    } catch (JSONException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR AL COMPROBAR DATOS", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
-    }
-
     class EnvioLogin implements Runnable {
         @Override
         public void run() {

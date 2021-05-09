@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
@@ -45,11 +46,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Capitulo;
+import com.example.tunovelaonline.pojos.Novela;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,6 +66,11 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class SubirNovelaFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Novela novela = new Novela();
+    Capitulo capitulo = new Capitulo();
 
     private String usuario = "";
     String id_usuario = "";
@@ -175,7 +189,7 @@ public class SubirNovelaFragment extends Fragment {
                     return;
                 }
 
-                Subir("https://tnowebservice.000webhostapp.com/Subir_novela.php");
+                new Thread(new Subir()).start();
 
                 long start = System.currentTimeMillis();
                 long end = start + 2*1000; // 60 seconds * 1000 ms/sec
@@ -450,56 +464,57 @@ public class SubirNovelaFragment extends Fragment {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private void Subir(String URL) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                asignarId(response);
+    class Subir implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("subir novela");
+
+                dos.writeUTF(extension);
+
+                novela.setIdUsuario(Integer.parseInt(id_usuario));
+                novela.setTitulo(titulo.getText().toString());
+                novela.setResena(resena.getText().toString());
+                novela.setNombreAlternativo(nombre_alt.getText().toString());
+                novela.setAutor(autor.getText().toString());
+                novela.setArtista(artista.getText().toString());
+                novela.setTraductor(traductor.getText().toString());
+                novela.setGenero(genero);
+
+                capitulo.setTitulo(titulo_cap.getText().toString());
+                capitulo.setNumCapitulo(Integer.parseInt(tipo_cap));
+                capitulo.setContenido(contenido_cap.getText().toString());
+
+                ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
+                oos.writeObject(novela);
+
+                oos = new ObjectOutputStream(socketCliente.getOutputStream());
+                oos.writeObject(capitulo);
+
+                InputStream is = socketCliente.getInputStream();
+                DataInputStream dis = new DataInputStream(is);
+                id_novela = String.valueOf(dis.readInt());
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imagename = "id_" + id_novela;
+                        SubirImagen(bitmap);
+                    }
+                });
+
+                os.close();
+                dos.close();
+                oos.close();
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("id_usuario", id_usuario);
-                parametros.put("titulo", titulo.getText().toString());
-                parametros.put("resena", resena.getText().toString());
-                parametros.put("nombre_alternativo", nombre_alt.getText().toString());
-                parametros.put("autor", autor.getText().toString());
-                parametros.put("artista", artista.getText().toString());
-                parametros.put("traductor", traductor.getText().toString());
-                parametros.put("genero", genero);
-                parametros.put("titulo_cap", titulo_cap.getText().toString());
-                parametros.put("capitulo", tipo_cap);
-                parametros.put("cont_capitulo", contenido_cap.getText().toString());
-                return parametros;
-            }
-        };
-
-        requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
-    }
-
-    private void asignarId(String id){
-        id_novela = id;
-        imagename = "id_" + id_novela;
-
-        if(!(bitmap == null)){
-            SubirImagen(bitmap);
-            UpdateURL("https://tnowebservice.000webhostapp.com/UpdateURL.php");
-        }
-    }
-
-    private void createNotificationChannel(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            CharSequence name = "Noticacion";
-            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
-            NotificationManager notificationManager = (NotificationManager) contexto.getSystemService(NOTIFICATION_SERVICE);
-            notificationManager.createNotificationChannel(notificationChannel);
         }
     }
 
@@ -526,30 +541,6 @@ public class SubirNovelaFragment extends Fragment {
         };
         //adding the request to volley
         Volley.newRequestQueue(getContext()).add(volleyMultipartRequest);
-    }
-
-    private void UpdateURL(String URL) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //Toast.makeText(SubirNovela.this, "Subido", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("id", id_novela);
-                parametros.put("url", "https://tnowebservice.000webhostapp.com/img/id_" + id_novela + extension);
-                return parametros;
-            }
-        };
-        requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
     }
 
 }

@@ -12,18 +12,19 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tunovelaonline.pojos.Novela;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class AdaptadorNovelasModificar extends RecyclerView.Adapter<com.example.tunovelaonline.AdaptadorNovelasModificar.ViewHolderNovelas> implements View.OnClickListener{
+public class AdaptadorNovelasModificar extends RecyclerView.Adapter<AdaptadorNovelasModificar.ViewHolderNovelas> implements View.OnClickListener{
 
-    ArrayList<ListaNovelas> listaNovelas;
+    ArrayList<Novela> listaNovelas;
     private View.OnClickListener listener;
     private LayoutInflater mInflater;
     private Context context;
 
-    public AdaptadorNovelasModificar(ArrayList<ListaNovelas> listaNovelas, Context context) {
+    public AdaptadorNovelasModificar(ArrayList<Novela> listaNovelas, Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.listaNovelas = listaNovelas;
@@ -40,9 +41,9 @@ public class AdaptadorNovelasModificar extends RecyclerView.Adapter<com.example.
     public void onBindViewHolder(ViewHolderNovelas holder, int position) {
         holder.card.setAnimation(AnimationUtils.loadAnimation(context, R.anim.slide));
         holder.Titulo.setText(listaNovelas.get(position).getTitulo());
-        holder.id.setText(listaNovelas.get(position).getId());
+        holder.id.setText(listaNovelas.get(position).getIdNovela().toString());
         //holder.imagen.setImageURI(Uri.parse(listaNovelas.get(position).getImagen()));
-        Picasso.get().load(listaNovelas.get(position).getImagen()).into(holder.imagen);
+        Picasso.get().load(listaNovelas.get(position).getPortada()).into(holder.imagen);
     }
 
     @Override
@@ -85,7 +86,7 @@ public class AdaptadorNovelasModificar extends RecyclerView.Adapter<com.example.
     }
 
     public String mostrarId (int position){
-        String id = listaNovelas.get(position).getId();
+        String id = String.valueOf(listaNovelas.get(position).getIdNovela());
         return id;
     }
 }

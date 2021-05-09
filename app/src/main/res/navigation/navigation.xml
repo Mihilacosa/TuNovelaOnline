@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/splashActivity">
+
+    <activity
+        android:id="@+id/splashActivity"
+        android:label="activity_splash"
+        tools:layout="@layout/activity_splash" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.tunovelaonline.MainActivity"
+        android:label="activity_main"
+        tools:layout="@layout/activity_main" />
+    <fragment
+        android:id="@+id/subirNovelaFragment"
+        android:name="com.example.tunovelaonline.SubirNovelaFragment"
+        android:label="SubirNovelaFragment" />
+    <fragment
+        android:id="@+id/inicioFragment"
+        android:name="com.example.tunovelaonline.InicioFragment"
+        android:label="InicioFragment" >
+        <action
+            android:id="@+id/action_inicioFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_inicioFragment_to_registroFragment"
+            app:destination="@id/registroFragment" />
+        <action
+            android:id="@+id/action_inicioFragment_to_modificarNovelasFragment"
+            app:destination="@id/modificarNovelasFragment" />
+        <action
+            android:id="@+id/action_inicioFragment_to_subirNovelaFragment"
+            app:destination="@id/subirNovelaFragment" />
+        <action
+            android:id="@+id/action_inicioFragment_to_novelaFragment"
+            app:destination="@id/novelaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.tunovelaonline.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_registroFragment"
+            app:destination="@id/registroFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registroFragment"
+        android:name="com.example.tunovelaonline.RegistroFragment"
+        android:label="RegistroFragment" >
+        <action
+            android:id="@+id/action_registroFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/modificarNovelasFragment"
+        android:name="com.example.tunovelaonline.ModificarNovelasFragment"
+        android:label="ModificarNovelasFragment" >
+        <action
+            android:id="@+id/action_modificarNovelasFragment_to_modificarNovelaFragment"
+            app:destination="@id/modificarNovelaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/modificarNovelaFragment"
+        android:name="com.example.tunovelaonline.ModificarNovelaFragment"
+        android:label="ModificarNovelaFragment" />
+    <fragment
+        android:id="@+id/novelaFragment"
+        android:name="com.example.tunovelaonline.NovelaFragment"
+        android:label="NovelaFragment" >
+        <action
+            android:id="@+id/action_novelaFragment_to_capituloFragment"
+            app:destination="@id/capituloFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/capituloFragment"
+        android:name="com.example.tunovelaonline.CapituloFragment"
+        android:label="CapituloFragment" >
+        <action
+            android:id="@+id/action_capituloFragment_to_novelaFragment"
+            app:destination="@id/novelaFragment" />
+    </fragment>
+</navigation>

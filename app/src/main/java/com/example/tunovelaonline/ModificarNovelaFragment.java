@@ -35,6 +35,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.tunovelaonline.pojos.Novela;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -43,14 +44,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
 public class ModificarNovelaFragment extends Fragment {
+    String equipoServidor = "192.168.1.116";
+    int puertoServidor = 30500;
+    Socket socketCliente;
+    Novela novela;
+    Novela novelaModi;
 
     private String usuario = "";
     String id_usuario = "";
@@ -125,19 +136,19 @@ public class ModificarNovelaFragment extends Fragment {
             }
         });
 
-        CargarNovela("https://tnowebservice.000webhostapp.com/Novela_seleccionada_modi.php?id_novela=" + id_novela);
+        new Thread(new CargarNovela()).start();
 
         enviar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 generos();
-                Subir("https://tnowebservice.000webhostapp.com/Subir_novela_modi.php");
+
+                new Thread(new Subir()).start();
 
                 if(!(bitmap == null)){
                     SubirImagen(bitmap);
-                    UpdateURL("https://tnowebservice.000webhostapp.com/UpdateURL.php");
+                    new Thread(new UpdateURL()).start();
                 }
-
 
                 new android.os.Handler().postDelayed(new Runnable() {
                     @Override
@@ -153,43 +164,56 @@ public class ModificarNovelaFragment extends Fragment {
         return v;
     }
 
+    class CargarNovela implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
-    private void CargarNovela(String URL) {
-        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(URL, new Response.Listener<JSONArray>() {
-            @Override
-            public void onResponse(JSONArray response) {
-                JSONObject jsonObject = null;
-                for (int i = 0; i < response.length(); i++){
-                    try {
-                        jsonObject = response.getJSONObject(i);
-                        Picasso.get().load(jsonObject.getString("portada")).into(portada_img);
-                        titulo_modi = new String(jsonObject.getString("titulo").getBytes("ISO-8859-1"), "UTF-8");
-                        resena_modi = new String(jsonObject.getString("resena").getBytes("ISO-8859-1"), "UTF-8");
-                        nombre_alt_modi = new String(jsonObject.getString("nombre_alternativo").getBytes("ISO-8859-1"), "UTF-8");
-                        autor_modi = new String(jsonObject.getString("autor").getBytes("ISO-8859-1"), "UTF-8");
-                        artista_modi = new String(jsonObject.getString("artista").getBytes("ISO-8859-1"), "UTF-8");
-                        traductor_modi = new String(jsonObject.getString("traductor").getBytes("ISO-8859-1"), "UTF-8");
-                        genero_modi = new String(jsonObject.getString("genero").getBytes("ISO-8859-1"), "UTF-8");
-                    } catch (JSONException | UnsupportedEncodingException e){
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar novela");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_novela);
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                novela = (Novela) ois.readObject();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Picasso.get().load(novela.getPortada()).into(portada_img);
+                        titulo_modi = novela.getTitulo();
+                        resena_modi = novela.getResena();
+                        nombre_alt_modi = novela.getNombreAlternativo();
+                        autor_modi = novela.getAutor();
+                        artista_modi = novela.getArtista();
+                        traductor_modi = novela.getTraductor();
+                        genero_modi = novela.getGenero();
+
+                        titulo.setText(titulo_modi);
+                        resena.setText(resena_modi);
+                        nombre_alt.setText(nombre_alt_modi);
+                        autor.setText(autor_modi);
+                        artista.setText(artista_modi);
+                        traductor.setText(traductor_modi);
+                        modi_generos.setText("Genero: " + genero_modi);
                     }
-                }
-                titulo.setText(titulo_modi);
-                resena.setText(resena_modi);
-                nombre_alt.setText(nombre_alt_modi);
-                autor.setText(autor_modi);
-                artista.setText(artista_modi);
-                traductor.setText(traductor_modi);
-                modi_generos.setText("Genero: " + genero_modi);
+                });
+
+                os.close();
+                dos.close();
+                ois.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "ERROR DE CARGA DE NOVELA SELECCIONADA", Toast.LENGTH_SHORT).show();
-            }
-        });
-        RequestQueue requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(jsonArrayRequest);
+
+        }
     }
 
     public void generos_inicio() {
@@ -442,37 +466,41 @@ public class ModificarNovelaFragment extends Fragment {
         return byteArrayOutputStream.toByteArray();
     }
 
-    private void Subir(String URL) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //Toast.makeText(getContext(), "Modificado", Toast.LENGTH_SHORT).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("id_novela", id_novela);
-                parametros.put("titulo", titulo.getText().toString());
-                parametros.put("resena", resena.getText().toString());
-                parametros.put("nombre_alternativo", nombre_alt.getText().toString());
-                parametros.put("autor", autor.getText().toString());
-                parametros.put("artista", artista.getText().toString());
-                parametros.put("traductor", traductor.getText().toString());
+    class Subir implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("novela para modificar");
+
+                novelaModi = new Novela();
+                novelaModi.setIdNovela(Integer.parseInt(id_novela));
+                novelaModi.setTitulo(titulo.getText().toString());
+                novelaModi.setResena(resena.getText().toString());
+                novelaModi.setNombreAlternativo(nombre_alt.getText().toString());
+                novelaModi.setAutor(autor.getText().toString());
+                novelaModi.setArtista(artista.getText().toString());
+                novelaModi.setTraductor(traductor.getText().toString());
                 if(genero == ""){
                     genero = genero_modi;
                 }
-                parametros.put("genero", genero);
-                return parametros;
+                novelaModi.setGenero(genero);
+
+                ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
+                oos.writeObject(novelaModi);
+
+                os.close();
+                dos.close();
+                oos.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
-        requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
+
+        }
     }
 
     private void SubirImagen(final Bitmap bitmap) {
@@ -500,28 +528,27 @@ public class ModificarNovelaFragment extends Fragment {
         Volley.newRequestQueue(getContext()).add(volleyMultipartRequest);
     }
 
-    private void UpdateURL(String URL) {
-        StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                //Toast.makeText(SubirNovela.this, "Subido", Toast.LENGTH_SHORT).show();
+    class UpdateURL implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("novela para modificar url");
+
+                dos.writeUTF(id_novela);
+                dos.writeUTF(extension);
+
+                os.close();
+                dos.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> parametros = new HashMap<String, String>();
-                parametros.put("id", id_novela);
-                parametros.put("url", "https://tnowebservice.000webhostapp.com/img/id_" + id_novela + extension);
-                return parametros;
-            }
-        };
-        requestQueue = Volley.newRequestQueue(getContext());
-        requestQueue.add(stringRequest);
+
+        }
     }
 
 }
