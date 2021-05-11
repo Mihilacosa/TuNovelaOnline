@@ -61,6 +61,12 @@
         <action
             android:id="@+id/action_modificarNovelasFragment_to_modificarNovelaFragment"
             app:destination="@id/modificarNovelaFragment" />
+        <action
+            android:id="@+id/action_modificarNovelasFragment_to_subirCapituloFragment"
+            app:destination="@id/subirCapituloFragment" />
+        <action
+            android:id="@+id/action_modificarNovelasFragment_to_modificarCapitulosFragment"
+            app:destination="@id/modificarCapitulosFragment" />
     </fragment>
     <fragment
         android:id="@+id/modificarNovelaFragment"
@@ -81,5 +87,25 @@
         <action
             android:id="@+id/action_capituloFragment_to_novelaFragment"
             app:destination="@id/novelaFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/subirCapituloFragment"
+        android:name="com.example.tunovelaonline.SubirCapituloFragment"
+        android:label="SubirCapituloFragment" />
+    <fragment
+        android:id="@+id/modificarCapituloFragment"
+        android:name="com.example.tunovelaonline.ModificarCapituloFragment"
+        android:label="ModificarCapituloFragment" >
+        <action
+            android:id="@+id/action_modificarCapituloFragment_to_modificarCapitulosFragment"
+            app:destination="@id/modificarCapitulosFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/modificarCapitulosFragment"
+        android:name="com.example.tunovelaonline.ModificarCapitulosFragment"
+        android:label="ModificarCapitulosFragment" >
+        <action
+            android:id="@+id/action_modificarCapitulosFragment_to_modificarCapituloFragment"
+            app:destination="@id/modificarCapituloFragment" />
     </fragment>
 </navigation>

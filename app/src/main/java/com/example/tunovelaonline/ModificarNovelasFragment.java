@@ -54,6 +54,7 @@ public class ModificarNovelasFragment extends Fragment {
     ArrayList<Novela> listaNovelas = new ArrayList();
     private  String usuario = "";
     String titulo, id, imagen, resena, id_usuario;
+    String id_N;
 
     RecyclerView recyclerNovelas;
     AdaptadorNovelasModificar adapter;
@@ -62,6 +63,8 @@ public class ModificarNovelasFragment extends Fragment {
     RequestQueue requestQueue;
 
     ModificarNovelaFragment novela;
+    ModificarCapitulosFragment modCapitulo;
+    SubirCapituloFragment subirCapitulo;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_modificar_novelas, container, false);
@@ -116,9 +119,10 @@ public class ModificarNovelasFragment extends Fragment {
                         adapter.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                String id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                                id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                                String titulo = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getTitulo();
 
-                                final CharSequence[] options = { "Modificar novela", "Modificar capitulo", "Eliminar", "Cancelar" };
+                                final CharSequence[] options = { "Modificar novela", "Añadir capitulo", "Modificar capitulo", "Eliminar", "Cancelar" };
                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                                 builder.setTitle("Opciones");
                                 builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -132,13 +136,26 @@ public class ModificarNovelasFragment extends Fragment {
                                             novela.setArguments(bundle);
                                             getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
                                         }
+                                        else if (options[item].equals("Añadir capitulo"))
+                                        {
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("id",id_N);
+                                            subirCapitulo = new SubirCapituloFragment();
+                                            subirCapitulo.setArguments(bundle);
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,subirCapitulo).commit();
+                                        }
                                         else if (options[item].equals("Modificar capitulo"))
                                         {
-
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("id",id_N);
+                                            bundle.putString("titulo",titulo);
+                                            modCapitulo = new ModificarCapitulosFragment();
+                                            modCapitulo.setArguments(bundle);
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
                                         }
                                         else if (options[item].equals("Eliminar"))
                                         {
-
+                                            new Thread(new EliminarNovela()).start();
                                         }
                                         else if (options[item].equals("Cancelar")) {
                                             dialog.dismiss();
@@ -157,6 +174,32 @@ public class ModificarNovelasFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class EliminarNovela implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("eliminar novela");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_N);
+
+                os.close();
+                dos.close();
+
+                socketCliente.close();
+
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,new ModificarNovelasFragment()).commit();
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
