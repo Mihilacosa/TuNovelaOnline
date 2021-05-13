@@ -155,7 +155,12 @@ public class ModificarCapitulosFragment extends Fragment {
                 bundle.putString("titulo",titulo_Novela);
                 modCapitulo = new ModificarCapitulosFragment();
                 modCapitulo.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                    }
+                },1000); // milliseconds: 1 seg.
 
             } catch (IOException e) {
                 e.printStackTrace();

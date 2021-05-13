@@ -11,7 +11,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -102,7 +104,7 @@ public class SubirNovelaFragment extends Fragment {
     TextView contenido_cap;
     Button enviar;
     ScrollView scrollNovela;
-    String extension;
+    String extension = ".png";
 
     RequestQueue requestQueue;
     View v;
@@ -112,6 +114,8 @@ public class SubirNovelaFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_subir_novela, container, false);
 
         contexto = container.getContext();
+
+        bitmap =((BitmapDrawable)getResources().getDrawable(R.drawable.no_img)).getBitmap();
 
         titulo = v.findViewById(R.id.nuevo_titulo);
         resena = v.findViewById(R.id.nueva_resena);
@@ -191,12 +195,12 @@ public class SubirNovelaFragment extends Fragment {
 
                 new Thread(new Subir()).start();
 
-                long start = System.currentTimeMillis();
-                long end = start + 2*1000; // 60 seconds * 1000 ms/sec
-                while (System.currentTimeMillis() < end) {
-
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,new InicioFragment()).commit();
-                }
+                new android.os.Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,new InicioFragment()).commit();
+                    }
+                },2000); // milliseconds: 1 seg.
             }
         });
 

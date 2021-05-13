@@ -155,7 +155,7 @@ public class ModificarNovelaFragment extends Fragment {
                     public void run() {
                         getFragmentManager().beginTransaction().replace(R.id.fragment_container,new ModificarNovelasFragment()).commit();
                     }
-                },1500); // milliseconds: 1 seg.
+                },1000); // milliseconds: 1 seg.
 
 
             }

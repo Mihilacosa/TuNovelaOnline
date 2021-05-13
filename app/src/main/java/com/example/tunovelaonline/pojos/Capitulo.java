@@ -5,6 +5,7 @@ import java.sql.Date;
 
 public class Capitulo implements Serializable{
     private Integer idCapitulo;
+    private Integer idNovela;
     private Integer idUsuario;
     private String titulo;
     private Integer numCapitulo;
@@ -20,8 +21,9 @@ public class Capitulo implements Serializable{
         this.numCapitulo = numCapitulo;
     }
 
-    public Capitulo(Integer idCapitulo, Integer idUsuario, String titulo, Integer numCapitulo, String contenido, Date fechaSubida) {
+    public Capitulo(Integer idCapitulo, Integer idNovela, Integer idUsuario, String titulo, Integer numCapitulo, String contenido, Date fechaSubida) {
         this.idCapitulo = idCapitulo;
+        this.idUsuario = idNovela;
         this.idUsuario = idUsuario;
         this.titulo = titulo;
         this.numCapitulo = numCapitulo;
@@ -35,6 +37,14 @@ public class Capitulo implements Serializable{
 
     public void setIdCapitulo(Integer idCapitulo) {
         this.idCapitulo = idCapitulo;
+    }
+
+    public Integer getIdNovela() {
+        return idNovela;
+    }
+
+    public void setIdNovela(Integer idNovela) {
+        this.idNovela = idNovela;
     }
 
     public Integer getIdUsuario() {

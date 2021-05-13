@@ -63,6 +63,7 @@ public class SubirCapituloFragment extends Fragment {
                 dos.writeUTF("subir capitulo");
 
                 capitulo = new Capitulo();
+                capitulo.setIdNovela(Integer.valueOf(id_novela));
                 capitulo.setTitulo(String.valueOf(titulo.getText()));
                 capitulo.setNumCapitulo(Integer.parseInt(String.valueOf(num_cap.getText())));
                 capitulo.setContenido(String.valueOf(contenido.getText()));

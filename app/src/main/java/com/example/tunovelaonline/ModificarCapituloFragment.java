@@ -64,7 +64,12 @@ public class ModificarCapituloFragment extends Fragment {
                 bundle.putString("titulo",titulo_Novela);
                 modCapitulo = new ModificarCapitulosFragment();
                 modCapitulo.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+
+                long start = System.currentTimeMillis();
+                long end = start + 1000; // 60 seconds * 1000 ms/sec
+                while (System.currentTimeMillis() < end) {
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                }
             }
         });
 
@@ -79,10 +84,8 @@ public class ModificarCapituloFragment extends Fragment {
 
                 OutputStream os = socketCliente.getOutputStream();
                 DataOutputStream dos = new DataOutputStream(os);
-                dos.writeUTF("mostrar capitulo modificar");
+                dos.writeUTF("mostrar capitulo");
 
-                os = socketCliente.getOutputStream();
-                dos = new DataOutputStream(os);
                 dos.writeUTF(id_cap);
 
                 ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
@@ -96,7 +99,7 @@ public class ModificarCapituloFragment extends Fragment {
                     @Override
                     public void run() {
                         titulo.setText(capitulo.getTitulo());
-                        num_cap.setText(capitulo.getNumCapitulo());
+                        num_cap.setText(String.valueOf(capitulo.getNumCapitulo()));
                         contenido.setText(capitulo.getContenido());
                     }
                 });
