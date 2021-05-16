@@ -49,7 +49,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class NovelaFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Novela novela;
@@ -73,7 +73,7 @@ public class NovelaFragment extends Fragment {
     private  String usuario = "";
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_novela, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         tit_alt = v.findViewById(R.id.Novela_titulo_alternativo);
         autor = v.findViewById(R.id.Novela_autor);
         artista = v.findViewById(R.id.Novela_artista);

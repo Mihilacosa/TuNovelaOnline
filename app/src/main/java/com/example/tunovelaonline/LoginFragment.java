@@ -45,7 +45,7 @@ import java.util.ArrayList;
 import static android.content.Context.MODE_PRIVATE;
 
 public class LoginFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Usuario usuario = null;
@@ -60,7 +60,7 @@ public class LoginFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
 
         humano = v.findViewById(R.id.humano);

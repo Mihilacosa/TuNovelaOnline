@@ -24,7 +24,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ModificarCapituloFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
 
@@ -41,7 +41,7 @@ public class ModificarCapituloFragment extends Fragment {
     View view;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_modificar_capitulo, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         titulo = view.findViewById(R.id.modi_nuevo_titulo_capitulo);
         num_cap = view.findViewById(R.id.modi_nuevo_num_capitulo);
         contenido = view.findViewById(R.id.modi_nuevo_contenido_cap);

@@ -28,7 +28,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class InicioFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
 
@@ -46,7 +46,7 @@ public class InicioFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_inicio, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         new Thread(new Cargar()).start();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();

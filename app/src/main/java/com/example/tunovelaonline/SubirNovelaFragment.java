@@ -68,7 +68,7 @@ import static android.app.Activity.RESULT_OK;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class SubirNovelaFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Novela novela = new Novela();
@@ -112,7 +112,7 @@ public class SubirNovelaFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_subir_novela, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
 
         bitmap =((BitmapDrawable)getResources().getDrawable(R.drawable.no_img)).getBitmap();

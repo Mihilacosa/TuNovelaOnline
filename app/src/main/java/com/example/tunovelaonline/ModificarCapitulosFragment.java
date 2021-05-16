@@ -23,7 +23,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 public class ModificarCapitulosFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     private ArrayList<Capitulo> Lista = new ArrayList<>();
@@ -40,7 +40,7 @@ public class ModificarCapitulosFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.fragment_modificar_capitulos, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         titulo_novela = view.findViewById(R.id.titulo_novela_modificar);
 
         Bundle bundle = this.getArguments();

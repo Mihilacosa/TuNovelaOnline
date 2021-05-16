@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegistroFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Usuario usuario2;
@@ -63,7 +63,7 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_registro, container, false);
         mAuth = FirebaseAuth.getInstance();
-
+        equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
 
         Button InicioSesionRegisatro = v.findViewById(R.id.InicioRegistro);

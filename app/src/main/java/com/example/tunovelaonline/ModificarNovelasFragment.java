@@ -46,7 +46,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ModificarNovelasFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     public static final String ID_NOVELA = "com.com.example.tarea_1.ID_NOVELA";
@@ -68,7 +68,7 @@ public class ModificarNovelasFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_modificar_novelas, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);

@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class CapituloFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Capitulo capitulo;
@@ -56,7 +56,7 @@ public class CapituloFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_capitulo, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);

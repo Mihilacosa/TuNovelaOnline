@@ -57,7 +57,7 @@ import java.util.Map;
 import static android.app.Activity.RESULT_OK;
 
 public class ModificarNovelaFragment extends Fragment {
-    String equipoServidor = "192.168.1.116";
+    String equipoServidor;
     int puertoServidor = 30500;
     Socket socketCliente;
     Novela novela;
@@ -97,7 +97,7 @@ public class ModificarNovelaFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_modificar_novela, container, false);
-
+        equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
 
         titulo = v.findViewById(R.id.modi_nuevo_titulo);
