@@ -2,6 +2,7 @@ package com.example.tunovelaonline;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -54,6 +56,7 @@ public class CapituloFragment extends Fragment {
     private  String usuario = "";
     private FirebaseAuth mAuth;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_capitulo, container, false);
         equipoServidor = getString(R.string.ip_server);
@@ -93,11 +96,15 @@ public class CapituloFragment extends Fragment {
         if(posicion == 0){
             Anterior.setEnabled(false);
             Anterior2.setEnabled(false);
+            Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+            Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
         }
 
         if(posicion == cap_max){
             Siguiente.setEnabled(false);
             Siguiente2.setEnabled(false);
+            Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+            Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
         }
 
         Titulo = v.findViewById(R.id.Titulo_cap);
@@ -110,19 +117,22 @@ public class CapituloFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                posicion = posicion - 1;
                 if(posicion != cap_max){
                     Siguiente.setEnabled(true);
+                    Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
-                posicion = posicion - 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
                 new Thread(new CargarCapitulo()).start();
 
                 if(posicion == 0){
                     Anterior.setEnabled(false);
+                    Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
                 }else{
                     Anterior.setEnabled(true);
+                    Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 scroll.fullScroll(ScrollView.FOCUS_UP);
@@ -133,19 +143,22 @@ public class CapituloFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
+                posicion = posicion - 1;
                 if(posicion != cap_max){
                     Siguiente2.setEnabled(true);
+                    Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
-                posicion = posicion - 1;
                 id_cap = Capitulos_id.get(posicion);
                 id_capitulo =  String.valueOf(Capitulos_id.get(posicion));
                 new Thread(new CargarCapitulo()).start();
 
                 if(posicion == 0){
                     Anterior2.setEnabled(false);
+                    Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
                 }else{
                     Anterior2.setEnabled(true);
+                    Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 scroll.fullScroll(ScrollView.FOCUS_UP);
@@ -162,12 +175,15 @@ public class CapituloFragment extends Fragment {
 
                 if(posicion == cap_max){
                     Siguiente.setEnabled(false);
+                    Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
                 }else{
                     Siguiente.setEnabled(true);
+                    Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 if(posicion != 0){
                     Anterior.setEnabled(true);
+                    Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 scroll.fullScroll(ScrollView.FOCUS_UP);
@@ -184,12 +200,15 @@ public class CapituloFragment extends Fragment {
 
                 if(posicion == cap_max){
                     Siguiente2.setEnabled(false);
+                    Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
                 }else{
                     Siguiente2.setEnabled(true);
+                    Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 if(posicion != 0){
                     Anterior2.setEnabled(true);
+                    Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_500));
                 }
 
                 scroll.fullScroll(ScrollView.FOCUS_UP);

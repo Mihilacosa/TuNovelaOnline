@@ -41,10 +41,11 @@
 
             <Button
                 android:id="@+id/Anterior"
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 app:backgroundTint="@color/purple_500"
-                app:icon="@android:drawable/ic_media_rew"
+                android:text="ANTERIOR"
+                android:textColor="#FFFFFF"
                 tools:ignore="ButtonStyle" />
 
             <Button
@@ -62,10 +63,11 @@
 
             <Button
                 android:id="@+id/Siguiente"
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 app:backgroundTint="@color/purple_500"
-                app:icon="@android:drawable/ic_media_ff"
+                android:text="SIGUIENTE"
+                android:textColor="#FFFFFF"
                 tools:ignore="ButtonStyle" />
 
         </LinearLayout>
@@ -100,10 +102,11 @@
 
             <Button
                 android:id="@+id/Anterior2"
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 app:backgroundTint="@color/purple_500"
-                app:icon="@android:drawable/ic_media_rew"
+                android:text="ANTERIOR"
+                android:textColor="#FFFFFF"
                 tools:ignore="ButtonStyle" />
 
             <Button
@@ -121,10 +124,11 @@
 
             <Button
                 android:id="@+id/Siguiente2"
-                android:layout_width="64dp"
+                android:layout_width="wrap_content"
                 android:layout_height="50dp"
                 app:backgroundTint="@color/purple_500"
-                app:icon="@android:drawable/ic_media_ff"
+                android:text="SIGUIENTE"
+                android:textColor="#FFFFFF"
                 tools:ignore="ButtonStyle" />
 
         </LinearLayout>
