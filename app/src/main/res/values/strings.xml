@@ -55,4 +55,6 @@
     <string name="subir_novela">Subir novela</string>
     <string name="subir_capitulo">Subir capitulo</string>
     <string name="cerrar_sesi_n">Cerrar sesión</string>
+    <string name="tituloNovedad">Titulo: </string>
+    <string name="cap_tuloNovedad">Capítulo: </string>
 </resources>
