@@ -30,6 +30,11 @@
             android:title="Mis novelas"
             android:visible="false" />
         <item
+            android:id="@+id/confUsuario"
+            android:icon="@drawable/ic_configuracion"
+            android:title="Configuración"
+            android:visible="false" />
+        <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/cerrar_sesi_n"

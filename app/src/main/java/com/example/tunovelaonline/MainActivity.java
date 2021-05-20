@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.registro).setVisible(false);
                 nav_Menu.findItem(R.id.logout).setVisible(true);
                 nav_Menu.findItem(R.id.subir_novela).setVisible(true);
+                nav_Menu.findItem(R.id.confUsuario).setVisible(true);
                 nav_Menu.findItem(R.id.modificar).setVisible(true);
             }
         }
@@ -137,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new ModificarNovelasFragment()).commit();
                 break;
+            case R.id.confUsuario:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new UsuarioFragment()).commit();
+                break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
 
@@ -144,6 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.registro).setVisible(true);
                 nav_Menu.findItem(R.id.logout).setVisible(false);
                 nav_Menu.findItem(R.id.subir_novela).setVisible(false);
+                nav_Menu.findItem(R.id.confUsuario).setVisible(false);
                 nav_Menu.findItem(R.id.modificar).setVisible(false);
 
                 Intent i = new Intent(this, MainActivity.class);
