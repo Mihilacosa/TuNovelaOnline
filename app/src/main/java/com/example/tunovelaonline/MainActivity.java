@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,6 +20,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout drawer;
@@ -26,12 +28,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String usuario = "";
     String id_usuario = "";
     String usu_email = "";
+    String imagen_fire = "";
 
     Menu nav_Menu;
     NavigationView navigationView;
     View v;
     TextView name, email;
     boolean log;
+    ImageView imagen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             usuario = datos_usu.getString("usuario", "");
             id_usuario = datos_usu.getString("id", "");
             usu_email = datos_usu.getString("email", "");
+            imagen_fire = datos_usu.getString("imagen", "");
             if (!usuario.equals("")) {
                 log = true;
                 v.findViewById(R.id.nav_title).setVisibility(View.GONE);
@@ -58,9 +63,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 name = v.findViewById(R.id.usuName);
                 email = v.findViewById(R.id.usuEmail);
+                imagen= v.findViewById(R.id.usuIcono);
 
                 name.setText(usuario);
                 email.setText(usu_email);
+                if(imagen_fire.equals("") || imagen_fire.equals(" ")){
+
+                }else{
+                    Picasso.get().load(imagen_fire).noPlaceholder().centerCrop().fit().into(imagen);
+                }
 
                 nav_Menu = navigationView.getMenu();
 

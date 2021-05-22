@@ -89,4 +89,9 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
         String resena = listaNovelas.get(position).getResena();
         return resena;
     }
+
+    public String mostrarTitulo (int position){
+        String titulo = listaNovelas.get(position).getTitulo();
+        return titulo;
+    }
 }

@@ -215,6 +215,7 @@ public class RegistroFragment extends Fragment {
                         editor.putString("usuario", usuario2.getUsuario());
                         editor.putString("id", usuario2.getIdUsuario().toString());
                         editor.putString("email", usuario2.getEmail());
+                        editor.putString("imagen", usuario2.getImagen());
                         editor.apply();
 
                         Intent i = new Intent(getContext(), MainActivity.class);

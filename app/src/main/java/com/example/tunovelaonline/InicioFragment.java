@@ -116,8 +116,9 @@ public class InicioFragment extends Fragment {
         switch (item.getItemId()){
             case 120:
                 String resena2 = adapter.mostrarResena(item.getGroupId());
+                String titulo2 = adapter.mostrarTitulo(item.getGroupId());
                 AlertDialog.Builder resenya = new AlertDialog.Builder(getContext());
-                resenya.setMessage("Reseña \n\n" + resena2);
+                resenya.setMessage("Titulo: " + titulo2 + "\n\nReseña \n\n" + resena2);
                 resenya.setNeutralButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
