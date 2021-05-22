@@ -10,6 +10,11 @@
             android:title="Inicio"
             android:visible="true" />
         <item
+            android:id="@+id/busqueda"
+            android:icon="@drawable/ic_busqueda"
+            android:title="Busqueda"
+            android:visible="true" />
+        <item
             android:id="@+id/login"
             android:icon="@drawable/ic_login"
             android:title="@string/inicio_de_sesi_n_menu"
