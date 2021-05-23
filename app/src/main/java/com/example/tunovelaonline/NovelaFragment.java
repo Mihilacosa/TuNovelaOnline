@@ -45,15 +45,18 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 
 public class NovelaFragment extends Fragment {
-    String equipoServidor;
+    String equipoServidor,fecha_sus;
     int puertoServidor = 30500;
     Socket socketCliente;
     Novela novela;
-
+    Date date;
     private TextView Titulo_novela;
     private TextView resena;
     private ImageView portada, imgDespliegue;
@@ -62,6 +65,7 @@ public class NovelaFragment extends Fragment {
     private ArrayList<Integer> Capitulos_id = new ArrayList<>();
     private String id_capitulo;
     private String id_novela;
+    Boolean suscrito = false;
 
     View v;
 
@@ -96,17 +100,33 @@ public class NovelaFragment extends Fragment {
             }
         });
 
-        mAdView = v.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             usuario = datos_usu.getString("usuario", "");
-            if (!usuario.equals("")) {
-                //setTitle("Hola " + usuario);
+            fecha_sus = datos_usu.getString("suscripcion", "");
+
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha_sus);
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String hoy = simpleDateFormat.format(new Date());
+                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
+
+                if(hoyFecha.before(date)){
+                    suscrito = true;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+        }
+
+        mAdView = v.findViewById(R.id.adView);
+        if(suscrito == false){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
         }
 
         Bundle bundle = this.getArguments();

@@ -142,6 +142,7 @@ public class LoginFragment extends Fragment {
                         editor.putString("id", usuario.getIdUsuario().toString());
                         editor.putString("email", usuario.getEmail());
                         editor.putString("imagen", usuario.getImagen());
+                        editor.putString("suscripcion", String.valueOf(usuario.getSuscripcion()));
                         editor.apply();
 
                         Intent i = new Intent(getContext(), MainActivity.class);

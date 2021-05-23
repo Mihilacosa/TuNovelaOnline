@@ -20,18 +20,23 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tunovelaonline.pojos.Novela;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class InicioFragment extends Fragment {
-    String equipoServidor;
+    String equipoServidor,id_usuario,fecha;
     int puertoServidor = 30500;
     Socket socketCliente;
-
+    Date date;
     private  String usuario = "";
 
     ArrayList<Novela> listaNovelas = new ArrayList();
@@ -41,20 +46,24 @@ public class InicioFragment extends Fragment {
     View view;
     NovelaFragment novela;
     TextView name;
+    Context contexto;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         view = inflater.inflate(R.layout.fragment_inicio, container, false);
         equipoServidor = getString(R.string.ip_server);
+        contexto = container.getContext();
         new Thread(new Cargar()).start();
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             usuario = datos_usu.getString("usuario", "");
-            if (!usuario.equals("")) {
-                //name.setText(usuario);
+            id_usuario = datos_usu.getString("id", "");
+            fecha = datos_usu.getString("suscripcion", "");
+            if (fecha != "") {
+                new Thread(new FechaSuscripcion()).start();
             }
         }
 
@@ -106,6 +115,49 @@ public class InicioFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class FechaSuscripcion implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("fecha suscripcion");
+
+                dos.writeUTF(id_usuario);
+
+                InputStream is2 = socketCliente.getInputStream();
+                DataInputStream dis2 = new DataInputStream(is2);
+                fecha = dis2.readUTF();
+
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+
+                os.close();
+                dos.close();
+                is2.close();
+                dis2.close();
+
+                socketCliente.close();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = datos_usu.edit();
+
+                        editor.putString("suscripcion", date.toString());
+                        editor.apply();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
                 e.printStackTrace();
             }
         }

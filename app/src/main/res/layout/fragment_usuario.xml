@@ -30,7 +30,7 @@
             android:paddingRight="50dp">
 
             <TextView
-                android:id="@+id/textView27"
+                android:id="@+id/TextSuscricion"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="4"

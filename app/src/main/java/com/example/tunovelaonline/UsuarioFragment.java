@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -53,12 +54,17 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,13 +92,15 @@ public class UsuarioFragment extends Fragment {
             .merchantName("Tu Novela Online");
 
     String usuario = "";
-    String id_usuario, usu_email, imagen_fire;
+    String id_usuario, usu_email, imagen_fire, fecha;
     View view;
     EditText usuarioNuevo, emailNuevo, cont_act, cont_nueva, cont_rep;
     ImageView paypal,imagen_usu;
     Button enviar,imagen;
     String usu,email,contAct = "",cont,cont2;
     Boolean usuDif = false, emailDif = false, boton_imagen = false;
+    TextView textSuscripcion;
+    Date date;
 
     Uri selectedImageURI;
     Bitmap bitmap = null, bitmap_old;
@@ -104,7 +112,7 @@ public class UsuarioFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_usuario, container, false);
         equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
-
+        textSuscripcion = view.findViewById(R.id.TextSuscricion);
         usuarioNuevo = view.findViewById(R.id.nuevoUsuario);
         emailNuevo = view.findViewById(R.id.nuevoEmail);
         cont_act = view.findViewById(R.id.contrasena_actual);
@@ -121,6 +129,22 @@ public class UsuarioFragment extends Fragment {
             id_usuario = datos_usu.getString("id", "");
             usu_email = datos_usu.getString("email", "");
             imagen_fire = datos_usu.getString("imagen", "");
+            fecha = datos_usu.getString("suscripcion", "");
+
+            try {
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+                
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                String hoy = simpleDateFormat.format(new Date());
+                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
+                
+                if(hoyFecha.before(date)){
+                    paypal.setVisibility(View.GONE);
+                    textSuscripcion.setText("Suscripción hasta: " + date.toString());
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             usuarioNuevo.setText(usuario);
             emailNuevo.setText(usu_email);
@@ -327,6 +351,49 @@ public class UsuarioFragment extends Fragment {
         }
     }
 
+    class CambioFecha implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("cambio fecha");
+
+                dos.writeUTF(id_usuario);
+
+                InputStream is2 = socketCliente.getInputStream();
+                DataInputStream dis2 = new DataInputStream(is2);
+                fecha = dis2.readUTF();
+
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+
+                os.close();
+                dos.close();
+
+                socketCliente.close();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        paypal.setVisibility(View.GONE);
+                        textSuscripcion.setText("Suscripción hasta: " + date.toString());
+                        SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = datos_usu.edit();
+
+                        editor.putString("suscripcion", date.toString());
+                        editor.apply();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void initPaymentService() {
         try {
             Intent intent = new Intent(getActivity(), PayPalService.class);
@@ -357,15 +424,17 @@ public class UsuarioFragment extends Fragment {
                     try {
                         Log.i("paymentExample", confirm.toJSONObject().toString(4));
 
-                        Toast.makeText(getActivity().getApplicationContext(), "PaymentConfirmation info received from PayPal",
-                                Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Pago completado", Toast.LENGTH_LONG).show();
 
+                        new Thread(new CambioFecha()).start();
                     } catch (JSONException e) {
                         Log.e("paymentExample", "an extremely unlikely failure occurred: ", e);
                     }
+
                 }
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 Log.i("paymentExample", "The user canceled.");
+                Toast.makeText(getActivity(), "Pago cancelado", Toast.LENGTH_LONG).show();
             } else if (resultCode == PaymentActivity.RESULT_EXTRAS_INVALID) {
                 Log.i("paymentExample", "An invalid Payment was submitted. Please see the docs.");
             }
