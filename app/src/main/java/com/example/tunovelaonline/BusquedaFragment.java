@@ -3,10 +3,15 @@ package com.example.tunovelaonline;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ScrollView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,18 +34,86 @@ public class BusquedaFragment extends Fragment {
     Socket socketCliente;
 
     ArrayList<Novela> listaNovelas = new ArrayList();
+    ArrayList<Novela> listaNovelasAux = new ArrayList();
     RecyclerView recyclerNovelas;
     AdaptadorNovelas adapter;
+    EditText barra;
 
     NovelaFragment novela;
     View view;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_busqueda, container, false);
         equipoServidor = getString(R.string.ip_server);
-
         new Thread(new Cargar()).start();
+        recyclerNovelas = view.findViewById(R.id.ReyclerBusqueda);
+        barra = view.findViewById(R.id.BarraBusqueda);
+
+        barra.addTextChangedListener(textWatcher);
+
+        barra.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                barra.setText("");
+            }
+        });
+
 
         return view;
+    }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+
+        public void afterTextChanged(Editable s) {
+        }
+
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            listaNovelasAux = new ArrayList();
+            if(s == ""){
+                barra.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_busqueda, 0);
+            }else{
+                barra.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_clean, 0);
+            }
+
+            for (Novela novela :  listaNovelas) {
+                String titulo = novela.getTitulo().toLowerCase();
+                String contenido = s.toString().toLowerCase();
+                if(titulo.contains(contenido)){
+                    listaNovelasAux.add(novela);
+                }
+            }
+
+            if(listaNovelasAux.size() != 0){
+                Adaptador(listaNovelasAux);
+            }else{
+                barra.setError("No hay novelas");
+                Adaptador(listaNovelas);
+            }
+
+
+            recyclerNovelas.smoothScrollToPosition(0);
+        }
+    };
+
+    public void Adaptador (ArrayList<Novela> lista){
+        recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        adapter = new AdaptadorNovelas(lista, getActivity().getApplicationContext());
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+
+                Bundle bundle = new Bundle();
+                bundle.putString("id",id_N);
+                novela = new NovelaFragment();
+                novela.setArguments(bundle);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+            }
+        });
+        recyclerNovelas.setAdapter(adapter);
     }
 
     class Cargar implements Runnable {
@@ -64,7 +137,6 @@ public class BusquedaFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        recyclerNovelas = view.findViewById(R.id.ReyclerId);
                         recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
                         adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
