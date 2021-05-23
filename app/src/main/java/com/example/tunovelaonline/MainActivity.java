@@ -135,27 +135,27 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.busqueda:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new BusquedaFragment()).commit();
+                        new BusquedaFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.login:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new LoginFragment()).commit();
+                        new LoginFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.registro:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new RegistroFragment()).commit();
+                        new RegistroFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.subir_novela:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new SubirNovelaFragment()).commit();
+                        new SubirNovelaFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.modificar:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new ModificarNovelasFragment()).commit();
+                        new ModificarNovelasFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.confUsuario:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                        new UsuarioFragment()).commit();
+                        new UsuarioFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();

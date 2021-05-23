@@ -102,7 +102,7 @@ public class ModificarCapitulosFragment extends Fragment {
                                             bundle.putString("titulo",titulo_Novela);
                                             ModificarCapituloFragment capitulo_mod = new ModificarCapituloFragment();
                                             capitulo_mod.setArguments(bundle);
-                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo_mod).commit();
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo_mod).addToBackStack( "tag" ).commit();
                                         }
                                         else if (options[item].equals("Eliminar"))
                                         {

@@ -95,7 +95,7 @@ public class InicioFragment extends Fragment {
                                 bundle.putString("id",id_N);
                                 novela = new NovelaFragment();
                                 novela.setArguments(bundle);
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).addToBackStack( "tag" ).commit();
                             }
                         });
                         recyclerNovelas.setAdapter(adapter);

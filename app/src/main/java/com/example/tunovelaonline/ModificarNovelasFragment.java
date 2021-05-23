@@ -135,7 +135,7 @@ public class ModificarNovelasFragment extends Fragment {
                                                 bundle.putString("id",id_N);
                                                 novela = new ModificarNovelaFragment();
                                                 novela.setArguments(bundle);
-                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).addToBackStack( "tag" ).commit();
                                             }
                                             else if (options[item].equals("Añadir capitulo"))
                                             {
@@ -143,7 +143,7 @@ public class ModificarNovelasFragment extends Fragment {
                                                 bundle.putString("id",id_N);
                                                 subirCapitulo = new SubirCapituloFragment();
                                                 subirCapitulo.setArguments(bundle);
-                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,subirCapitulo).commit();
+                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,subirCapitulo).addToBackStack( "tag" ).commit();
                                             }
                                             else if (options[item].equals("Modificar capitulo"))
                                             {
@@ -152,7 +152,7 @@ public class ModificarNovelasFragment extends Fragment {
                                                 bundle.putString("titulo",titulo);
                                                 modCapitulo = new ModificarCapitulosFragment();
                                                 modCapitulo.setArguments(bundle);
-                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).addToBackStack( "tag" ).commit();
                                             }
                                             else if (options[item].equals("Eliminar"))
                                             {

@@ -137,7 +137,7 @@ public class RegistroFragment extends Fragment {
 
     public void InicioSesionReg(){
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new LoginFragment()).commit();
+                new LoginFragment()).addToBackStack( "tag" ).commit();
     }
 
     //Enviar datos para crear cuenta

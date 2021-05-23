@@ -88,7 +88,10 @@ public class BusquedaFragment extends Fragment {
             if(listaNovelasAux.size() != 0){
                 Adaptador(listaNovelasAux);
             }else{
-                barra.setError("No hay novelas");
+                if(s != ""){
+                    barra.setError("No hay novelas");
+                }
+
                 Adaptador(listaNovelas);
             }
 

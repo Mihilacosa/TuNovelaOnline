@@ -254,7 +254,7 @@ public class NovelaFragment extends Fragment {
                                 bundle.putSerializable("ARRAYLIST", Capitulos_id);
                                 CapituloFragment capitulo = new CapituloFragment();
                                 capitulo.setArguments(bundle);
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).commit();
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
                             }
                         });
 

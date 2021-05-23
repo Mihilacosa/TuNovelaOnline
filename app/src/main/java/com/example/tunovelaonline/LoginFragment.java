@@ -161,7 +161,7 @@ public class LoginFragment extends Fragment {
 
     public void Registrarse(){
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                new RegistroFragment()).commit();
+                new RegistroFragment()).addToBackStack( "tag" ).commit();
     }
 
 }
