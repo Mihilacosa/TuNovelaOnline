@@ -137,10 +137,10 @@ public class UsuarioFragment extends Fragment {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                 String hoy = simpleDateFormat.format(new Date());
                 Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
-                
+
                 if(hoyFecha.before(date)){
                     paypal.setVisibility(View.GONE);
-                    textSuscripcion.setText("Suscripción hasta: " + date.toString());
+                    textSuscripcion.setText("Suscripción hasta: " + date);
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -148,7 +148,7 @@ public class UsuarioFragment extends Fragment {
 
             usuarioNuevo.setText(usuario);
             emailNuevo.setText(usu_email);
-            if(imagen_fire == ""){
+            if(imagen_fire.length() < 5){
                 bitmap =((BitmapDrawable)getResources().getDrawable(R.drawable.no_img)).getBitmap();
             }else{
                 Picasso.get().load(imagen_fire).noPlaceholder().centerCrop().fit().into(imagen_usu);

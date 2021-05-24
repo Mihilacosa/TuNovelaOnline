@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView13"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
+            android:text="Preferencias"
+            android:textSize="30sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="6dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:text="Tamaño de letra:"
+                android:textSize="16sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginBottom="18dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+
+            <Button
+                android:id="@+id/btn_menos"
+                android:layout_width="wrap_content"
+                android:layout_height="46dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="-"
+                android:textSize="20sp"
+                app:backgroundTint="@color/purple_500" />
+
+            <TextView
+                android:id="@+id/text_tamano"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/btn_mas"
+                android:layout_width="wrap_content"
+                android:layout_height="46dp"
+                android:gravity="center_horizontal|center_vertical"
+                android:text="+"
+                android:textSize="20sp"
+                app:backgroundTint="@color/purple_500" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="18dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:text="Fuente de letra:"
+                android:textSize="16sp"
+                android:layout_marginBottom="6dp" />
+
+            <Spinner
+                android:id="@+id/spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:drawSelectorOnTop="true"
+                android:entries="@array/array_fuente" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="6dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:text="Fondo de lectura:"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+            <Button
+                android:id="@+id/btn_blanco"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="Blanco"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                app:backgroundTint="@color/fondo">
+
+            </Button>
+
+            <Button
+                android:id="@+id/btn_oscuro"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:layout_marginLeft="19dp"
+                android:layout_marginRight="19dp"
+                android:textColor="#D8D5D1"
+                android:textSize="10sp"
+                app:backgroundTint="#262626"
+                tools:text="Oscuro">
+
+            </Button>
+
+            <Button
+                android:id="@+id/btn_crema"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:text="Crema"
+                android:textColor="#000000"
+                android:textSize="10sp"
+                app:backgroundTint="#e8dfbf">
+
+            </Button>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnEnviar_preferencia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:backgroundTint="@color/purple_500"
+            android:textColor="#FFFFFF"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="25dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="25dp"
+            android:text="Guardar" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="6dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:text="Texto de ejemplo:"
+                android:textSize="16sp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_ejemplo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="18dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp">
+
+            <TextView
+                android:id="@+id/text_ejemplo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="17dp"
+                android:layout_marginLeft="17dp"
+                android:layout_marginBottom="6dp"
+                android:padding="8dp"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque hendrerit egestas ipsum, eget sodales justo dignissim molestie. In ut tellus eros. Fusce faucibus lacinia tellus at vehicula. Praesent nec pulvinar nibh. Cras in odio enim. Fusce pharetra ligula nec nulla facilisis, at vestibulum massa ullamcorper. \n\nDuis nulla sapien, rutrum ac scelerisque a, tempor faucibus metus. Maecenas in urna tristique, faucibus turpis at, tempus sapien. Nulla facilisi. Fusce porttitor rhoncus erat, quis semper elit. Aenean fermentum sagittis orci non ullamcorper."
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

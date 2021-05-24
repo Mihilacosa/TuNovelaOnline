@@ -63,7 +63,7 @@ public class InicioFragment extends Fragment {
             id_usuario = datos_usu.getString("id", "");
             fecha = datos_usu.getString("suscripcion", "");
             if (fecha != "") {
-                new Thread(new FechaSuscripcion()).start();
+                //new Thread(new FechaSuscripcion()).start();
             }
         }
 

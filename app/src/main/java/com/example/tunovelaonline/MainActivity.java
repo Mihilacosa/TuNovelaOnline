@@ -171,12 +171,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 startActivity(i);
                 break;
-            case R.id.nav_share:
-                Toast.makeText(this, "Share", Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.nav_send:
-                Toast.makeText(this, "Send", Toast.LENGTH_SHORT).show();
-                break;
         }
 
         drawer.closeDrawer(GravityCompat.START);

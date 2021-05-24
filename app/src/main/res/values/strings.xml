@@ -2,6 +2,16 @@
     <string name="ip_server">192.168.1.116</string>
     <string name="app_name">TuNovelaOnline</string>
 
+    <string-array name="array_fuente">
+        <item>Open sans</item>
+        <item>Arial</item>
+        <item>Times New Roman</item>
+        <item>Century Gothic</item>
+        <item>Lucida Sans</item>
+        <item>Tahoma</item>
+        <item>Verdana</item>
+    </string-array>
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
