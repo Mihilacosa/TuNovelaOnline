@@ -1,19 +1,30 @@
 package com.example.tunovelaonline;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -35,6 +46,7 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -53,13 +65,34 @@ public class CapituloFragment extends Fragment {
     private Integer id_cap;
     private ScrollView scroll;
 
-    private  String usuario = "";
+    Button opciones;
+    TextView contenido;
+
+    private String usuario = "";
     private FirebaseAuth mAuth;
+    View v;
+    Context contexto;
+
+//popUp
+    android.widget.Spinner spinner;
+    Button menos,mas,blanco,oscuro,crema,enviar;
+    TextView tamano_letra;
+    ConstraintLayout content;
+
+    String tamano,font,color,id_usuario;
+    String colorFondo, fontSpinner;
+    Integer tam_letra = 14;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_capitulo, container, false);
+        v = inflater.inflate(R.layout.fragment_capitulo, container, false);
         equipoServidor = getString(R.string.ip_server);
+        contenido = v.findViewById(R.id.Contenido_cap);
+        content = v.findViewById(R.id.contenidoView);
+        contexto = container.getContext();
+
+        Titulo = v.findViewById(R.id.Titulo_cap);
+        Contenido = v.findViewById(R.id.Contenido_cap);
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
@@ -69,6 +102,20 @@ public class CapituloFragment extends Fragment {
             }
         }
 
+        SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+        tamano = datos_usu.getString("tamano", "14");
+        font = datos_usu.getString("font", "Open sans");
+        color = datos_usu.getString("color", "blanco");
+
+        tam_letra = Integer.valueOf(tamano);
+        contenido.setTextSize(TypedValue.COMPLEX_UNIT_SP, Float.parseFloat(tamano));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            que_font(font);
+        }
+        colorFondo = color;
+        color_fondo(color);
+
+        opciones = v.findViewById(R.id.btnOpciones);
         Button Anterior = v.findViewById(R.id.Anterior);
         Button Indice = v.findViewById(R.id.Indice);
         Button Siguiente = v.findViewById(R.id.Siguiente);
@@ -106,10 +153,6 @@ public class CapituloFragment extends Fragment {
             Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
             Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
         }
-
-        Titulo = v.findViewById(R.id.Titulo_cap);
-        Contenido = v.findViewById(R.id.Contenido_cap);
-
 
         new Thread(new CargarCapitulo()).start();
 
@@ -229,6 +272,13 @@ public class CapituloFragment extends Fragment {
             }
         });
 
+        opciones.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                displayPopup();
+            }
+        });
+
         return v;
     }
 
@@ -279,4 +329,186 @@ public class CapituloFragment extends Fragment {
             }
         }
     }
+
+    public void displayPopup()
+    {
+        View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_up, null);
+        final PopupWindow popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, true);
+        popupWindow.showAtLocation(v.findViewById(R.id.Cap_scroll), Gravity.CENTER, 0, 0);
+
+        tamano_letra = popupView.findViewById(R.id.text_tamano);
+        tamano_letra.setText(tamano);
+        spinner = popupView.findViewById(R.id.spinner);
+        menos = popupView.findViewById(R.id.btn_menos);
+        mas = popupView.findViewById(R.id.btn_mas);
+        blanco = popupView.findViewById(R.id.btn_blanco);
+        oscuro = popupView.findViewById(R.id.btn_oscuro);
+        crema = popupView.findViewById(R.id.btn_crema);
+        enviar = popupView.findViewById(R.id.btnEnviar_preferencia);
+
+        spinnerSelected(font);
+        menos.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tam_letra > 8){
+                    tam_letra = tam_letra - 1;
+                    tamano_letra.setText(tam_letra.toString());
+                    contenido.setTextSize(TypedValue.COMPLEX_UNIT_SP, tam_letra);
+                }
+            }
+        });
+
+        mas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(tam_letra < 30){
+                    tam_letra = tam_letra + 1;
+                    tamano_letra.setText(tam_letra.toString());
+                    contenido.setTextSize(TypedValue.COMPLEX_UNIT_SP, tam_letra);
+                }
+            }
+        });
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                spinnerSelected(spinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        blanco.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorFondo = "blanco";
+                contenido.setTextColor(Color.parseColor("#000000"));
+                content.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                Titulo.setTextColor(Color.parseColor("#000000"));
+            }
+        });
+
+        oscuro.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorFondo = "oscuro";
+                contenido.setTextColor(Color.parseColor("#888888"));
+                content.setBackgroundColor(Color.parseColor("#262626"));
+                Titulo.setTextColor(Color.parseColor("#888888"));
+            }
+        });
+
+        crema.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                colorFondo = "crema";
+                contenido.setTextColor(Color.parseColor("#000000"));
+                content.setBackgroundColor(Color.parseColor("#e8dfbe"));
+                Titulo.setTextColor(Color.parseColor("#000000"));
+            }
+        });
+
+        enviar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = datos_usu.edit();
+
+                editor.putString("tamano", tam_letra.toString());
+                editor.putString("font", fontSpinner);
+                editor.putString("color", colorFondo);
+                editor.apply();
+
+                popupWindow.dismiss();
+            }
+        });
+    }
+
+    @SuppressLint("ResourceType")
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void que_font (String font){
+        if(font.equals("Open sans")){
+            fontSpinner = "Open sans";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.open_sans);
+            contenido.setTypeface(typeface);
+        }
+        if(font.equals("Amaranth")){
+            fontSpinner = "Amaranth";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.amaranth);
+            contenido.setTypeface(typeface);
+        }
+        if(font.equals("Doppio One")){
+            fontSpinner = "Doppio One";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.doppio_one);
+            contenido.setTypeface(typeface);
+        }
+        if(font.equals("Lustria")){
+            fontSpinner = "Lustria";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.lustria);
+            contenido.setTypeface(typeface);
+        }
+        if(font.equals("Happy Monkey")){
+            fontSpinner = "Happy Monkey";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.happy_monkey);
+            contenido.setTypeface(typeface);
+        }
+    }
+
+    public void spinnerSelected (String font){
+        if(font.equals("Open sans")){
+            fontSpinner = "Open sans";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.open_sans);
+            contenido.setTypeface(typeface);
+            spinner.setSelection(0);
+        }
+        if(font.equals("Amaranth")){
+            fontSpinner = "Amaranth";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.amaranth);
+            contenido.setTypeface(typeface);
+            spinner.setSelection(1);
+        }
+        if(font.equals("Doppio One")){
+            fontSpinner = "Doppio One";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.doppio_one);
+            contenido.setTypeface(typeface);
+            spinner.setSelection(2);
+        }
+        if(font.equals("Lustria")){
+            fontSpinner = "Lustria";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.lustria);
+            contenido.setTypeface(typeface);
+            spinner.setSelection(3);
+        }
+        if(font.equals("Happy Monkey")){
+            fontSpinner = "Happy Monkey";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.happy_monkey);
+            contenido.setTypeface(typeface);
+            spinner.setSelection(4);
+        }
+    }
+
+    public void color_fondo (String color){
+        if(color.equals("blanco")){
+            contenido.setTextColor(Color.parseColor("#000000"));
+            content.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            Titulo.setTextColor(Color.parseColor("#000000"));
+        }
+
+        if(color.equals("oscuro")){
+            contenido.setTextColor(Color.parseColor("#888888"));
+            content.setBackgroundColor(Color.parseColor("#262626"));
+            Titulo.setTextColor(Color.parseColor("#888888"));
+        }
+
+        if(color.equals("crema")){
+            contenido.setTextColor(Color.parseColor("#000000"));
+            content.setBackgroundColor(Color.parseColor("#e8dfbe"));
+            Titulo.setTextColor(Color.parseColor("#000000"));
+        }
+    }
+
 }

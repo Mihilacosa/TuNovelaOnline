@@ -3,13 +3,13 @@ package com.example.tunovelaonline.pojos;
 import java.io.Serializable;
 import java.sql.Date;
 
-public class Usuario implements Serializable {
+public class Usuario implements Serializable{
     private Integer idUsuario;
     private String usuario;
     private String email;
     private String contrasena;
     private String imagen;
-    private Date suscripcion;
+    private String suscripcion;
     private Integer tamanoLetra;
     private String fontLetra;
     private String tema;
@@ -17,7 +17,7 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(Integer idUsuario, String usuario, String email, String contrasena, String imagen, Date suscripcion, Integer tamanoLetra, String fontLetra, String tema) {
+    public Usuario(Integer idUsuario, String usuario, String email, String contrasena, String imagen, String suscripcion, Integer tamanoLetra, String fontLetra, String tema) {
         this.idUsuario = idUsuario;
         this.usuario = usuario;
         this.email = email;
@@ -69,11 +69,11 @@ public class Usuario implements Serializable {
         this.imagen = imagen;
     }
 
-    public Date getSuscripcion() {
+    public String getSuscripcion() {
         return suscripcion;
     }
 
-    public void setSuscripcion(Date suscripcion) {
+    public void setSuscripcion(String suscripcion) {
         this.suscripcion = suscripcion;
     }
 

@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.subir_novela).setVisible(true);
                 nav_Menu.findItem(R.id.confUsuario).setVisible(true);
                 nav_Menu.findItem(R.id.modificar).setVisible(true);
+                nav_Menu.findItem(R.id.confpreferencias).setVisible(true);
             }
         }
 
@@ -156,6 +157,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.confUsuario:
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new UsuarioFragment()).addToBackStack( "tag" ).commit();
+                break;
+            case R.id.confpreferencias:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new PreferenciaFragment()).addToBackStack( "tag" ).commit();
                 break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();

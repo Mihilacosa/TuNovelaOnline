@@ -1,11 +1,14 @@
 package com.example.tunovelaonline;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +18,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.tunovelaonline.pojos.Usuario;
@@ -25,6 +31,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
@@ -34,7 +41,7 @@ public class PreferenciaFragment extends Fragment {
     Socket socketCliente;
 
     String tamano,font,color,id_usuario;
-
+    String colorFondo, fontSpinner;
     Integer tam_letra;
 
     LinearLayout layout_ejemplo;
@@ -44,6 +51,7 @@ public class PreferenciaFragment extends Fragment {
 
     View view;
     Context contexto;
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_preferencia, container, false);
         equipoServidor = getString(R.string.ip_server);
@@ -72,6 +80,7 @@ public class PreferenciaFragment extends Fragment {
             tamano_letra.setText(tamano);
             text_ejemplo.setTextSize(TypedValue.COMPLEX_UNIT_SP, Float.parseFloat(tamano));
             que_font(font);
+            colorFondo = color;
             color_fondo(color);
         }
 
@@ -80,6 +89,7 @@ public class PreferenciaFragment extends Fragment {
             public void onClick(View v) {
                 if(tam_letra > 8){
                     tam_letra = tam_letra - 1;
+                    tamano_letra.setText(tam_letra.toString());
                     text_ejemplo.setTextSize(TypedValue.COMPLEX_UNIT_SP, tam_letra);
                 }
             }
@@ -90,23 +100,28 @@ public class PreferenciaFragment extends Fragment {
             public void onClick(View v) {
                 if(tam_letra < 30){
                     tam_letra = tam_letra + 1;
+                    tamano_letra.setText(tam_letra.toString());
                     text_ejemplo.setTextSize(TypedValue.COMPLEX_UNIT_SP, tam_letra);
                 }
             }
         });
 
-        spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    text_ejemplo.setTextAppearance((Integer) spinner.getSelectedItem());
-                }
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                que_font(spinner.getSelectedItem().toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 
         blanco.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                colorFondo = "blanco";
                 text_ejemplo.setTextColor(Color.parseColor("#000000"));
                 layout_ejemplo.setBackgroundColor(Color.parseColor("#FFFFFF"));
             }
@@ -115,6 +130,7 @@ public class PreferenciaFragment extends Fragment {
         oscuro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                colorFondo = "oscuro";
                 text_ejemplo.setTextColor(Color.parseColor("#888888"));
                 layout_ejemplo.setBackgroundColor(Color.parseColor("#262626"));
             }
@@ -123,6 +139,7 @@ public class PreferenciaFragment extends Fragment {
         crema.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                colorFondo = "crema";
                 text_ejemplo.setTextColor(Color.parseColor("#000000"));
                 layout_ejemplo.setBackgroundColor(Color.parseColor("#e8dfbe"));
             }
@@ -138,31 +155,38 @@ public class PreferenciaFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("ResourceType")
+    @RequiresApi(api = Build.VERSION_CODES.M)
     public void que_font (String font){
-        if(color.equals("Open sans")){
+        if(font.equals("Open sans")){
+            fontSpinner = "Open sans";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.open_sans);
+            text_ejemplo.setTypeface(typeface);
+            spinner.setSelection(0);
+        }
+        if(font.equals("Amaranth")){
+            fontSpinner = "Amaranth";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.amaranth);
+            text_ejemplo.setTypeface(typeface);
             spinner.setSelection(1);
         }
-        if(color.equals("Arial")){
+        if(font.equals("Doppio One")){
+            fontSpinner = "Doppio One";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.doppio_one);
+            text_ejemplo.setTypeface(typeface);
             spinner.setSelection(2);
         }
-        if(color.equals("Times New Roman")){
+        if(font.equals("Lustria")){
+            fontSpinner = "Lustria";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.lustria);
+            text_ejemplo.setTypeface(typeface);
             spinner.setSelection(3);
         }
-        if(color.equals("Century Gothic")){
+        if(font.equals("Happy Monkey")){
+            fontSpinner = "Happy Monkey";
+            Typeface typeface = ResourcesCompat.getFont(getContext(),R.font.happy_monkey);
+            text_ejemplo.setTypeface(typeface);
             spinner.setSelection(4);
-        }
-        if(color.equals("Lucida Sans")){
-            spinner.setSelection(5);
-        }
-        if(color.equals("Tahoma")){
-            spinner.setSelection(6);
-        }
-        if(color.equals("Verdana")){
-            spinner.setSelection(7);
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            text_ejemplo.setTextAppearance((Integer) spinner.getSelectedItem());
         }
     }
 
@@ -186,7 +210,46 @@ public class PreferenciaFragment extends Fragment {
     class EnvioPreferencias implements Runnable {
         @Override
         public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
 
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("preferencias");
+
+                Usuario usuario = new Usuario();
+                usuario.setIdUsuario(Integer.valueOf(id_usuario));
+                usuario.setTamanoLetra(tam_letra);
+                usuario.setFontLetra(spinner.getSelectedItem().toString());
+                usuario.setTema(colorFondo);
+
+                ObjectOutputStream oos = new ObjectOutputStream(socketCliente.getOutputStream());
+                oos.writeObject(usuario);
+
+
+                os.close();
+                dos.close();
+                oos.close();
+
+                socketCliente.close();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = datos_usu.edit();
+
+                        editor.putString("tamano", tam_letra.toString());
+                        editor.putString("font", fontSpinner);
+                        editor.putString("color", colorFondo);
+                        editor.apply();
+
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,new InicioFragment()).addToBackStack( "tag" ).commit();
+                    }
+                });
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -62,9 +62,7 @@ public class InicioFragment extends Fragment {
             usuario = datos_usu.getString("usuario", "");
             id_usuario = datos_usu.getString("id", "");
             fecha = datos_usu.getString("suscripcion", "");
-            if (fecha != "") {
-                //new Thread(new FechaSuscripcion()).start();
-            }
+
         }
 
         return view;
@@ -91,6 +89,9 @@ public class InicioFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        if (fecha == "") {
+                            new Thread(new FechaSuscripcion()).start();
+                        }
                         recyclerNovelas = view.findViewById(R.id.ReyclerId);
                         recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 

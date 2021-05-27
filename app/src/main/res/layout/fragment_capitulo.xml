@@ -9,8 +9,19 @@
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contenidoView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnOpciones"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_opciones"
+            app:backgroundTint="#6200EE"
+            app:iconPadding="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/Titulo_cap"
@@ -44,9 +55,9 @@
                 android:id="@+id/Anterior"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                app:backgroundTint="@color/purple_500"
                 android:text="ANTERIOR"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="@color/purple_500"
                 tools:ignore="ButtonStyle" />
 
             <Button
@@ -66,9 +77,9 @@
                 android:id="@+id/Siguiente"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                app:backgroundTint="@color/purple_500"
                 android:text="SIGUIENTE"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="@color/purple_500"
                 tools:ignore="ButtonStyle" />
 
         </LinearLayout>
@@ -106,9 +117,9 @@
                 android:id="@+id/Anterior2"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                app:backgroundTint="@color/purple_500"
                 android:text="ANTERIOR"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="@color/purple_500"
                 tools:ignore="ButtonStyle" />
 
             <Button
@@ -119,18 +130,18 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginRight="10dp"
-                app:backgroundTint="@color/purple_500"
-                android:textColor="#FFFFFF"
                 android:text="@string/indice"
+                android:textColor="#FFFFFF"
+                app:backgroundTint="@color/purple_500"
                 tools:ignore="ButtonStyle" />
 
             <Button
                 android:id="@+id/Siguiente2"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
-                app:backgroundTint="@color/purple_500"
                 android:text="SIGUIENTE"
                 android:textColor="#FFFFFF"
+                app:backgroundTint="@color/purple_500"
                 tools:ignore="ButtonStyle" />
 
         </LinearLayout>

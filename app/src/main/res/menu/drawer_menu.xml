@@ -36,8 +36,13 @@
             android:visible="false" />
         <item
             android:id="@+id/confUsuario"
-            android:icon="@drawable/ic_configuracion"
+            android:icon="@drawable/ic_conf"
             android:title="Configuración"
+            android:visible="false" />
+        <item
+            android:id="@+id/confpreferencias"
+            android:icon="@drawable/ic_preferencias"
+            android:title="Preferencias"
             android:visible="false" />
         <item
             android:id="@+id/logout"

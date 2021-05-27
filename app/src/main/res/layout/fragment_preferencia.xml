@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/fondo">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -66,6 +67,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
+                android:textColor="#000000"
                 android:textSize="16sp" />
 
             <Button
@@ -152,10 +154,10 @@
                 android:layout_height="40dp"
                 android:layout_marginLeft="19dp"
                 android:layout_marginRight="19dp"
-                android:textColor="#D8D5D1"
+                android:textColor="#FFFFFF"
                 android:textSize="10sp"
                 app:backgroundTint="#262626"
-                tools:text="Oscuro">
+                android:text="Oscuro">
 
             </Button>
 
@@ -208,10 +210,13 @@
             android:id="@+id/layout_ejemplo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginBottom="18dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
+            android:background="#FFFFFF"
+            android:orientation="vertical"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp">
 
             <TextView
                 android:id="@+id/text_ejemplo"
@@ -220,6 +225,7 @@
                 android:layout_marginStart="17dp"
                 android:layout_marginLeft="17dp"
                 android:layout_marginBottom="6dp"
+                android:fontFamily="@font/open_sans"
                 android:padding="8dp"
                 android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque hendrerit egestas ipsum, eget sodales justo dignissim molestie. In ut tellus eros. Fusce faucibus lacinia tellus at vehicula. Praesent nec pulvinar nibh. Cras in odio enim. Fusce pharetra ligula nec nulla facilisis, at vestibulum massa ullamcorper. \n\nDuis nulla sapien, rutrum ac scelerisque a, tempor faucibus metus. Maecenas in urna tristique, faucibus turpis at, tempus sapien. Nulla facilisi. Fusce porttitor rhoncus erat, quis semper elit. Aenean fermentum sagittis orci non ullamcorper."
                 android:textColor="#000000"

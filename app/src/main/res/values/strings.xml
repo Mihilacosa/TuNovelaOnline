@@ -4,12 +4,10 @@
 
     <string-array name="array_fuente">
         <item>Open sans</item>
-        <item>Arial</item>
-        <item>Times New Roman</item>
-        <item>Century Gothic</item>
-        <item>Lucida Sans</item>
-        <item>Tahoma</item>
-        <item>Verdana</item>
+        <item>Amaranth</item>
+        <item>Doppio One</item>
+        <item>Lustria</item>
+        <item>Happy Monkey</item>
     </string-array>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
