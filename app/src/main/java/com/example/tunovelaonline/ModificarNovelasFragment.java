@@ -57,7 +57,7 @@ public class ModificarNovelasFragment extends Fragment {
     String id_N;
 
     RecyclerView recyclerNovelas;
-    AdaptadorNovelasModificar adapter;
+    AdaptadorNovelas adapter;
 
     View v;
     RequestQueue requestQueue;
@@ -116,7 +116,7 @@ public class ModificarNovelasFragment extends Fragment {
                             recyclerNovelas = v.findViewById(R.id.RecyclerModificar);
                             recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                            adapter = new AdaptadorNovelasModificar(listaNovelas, getActivity().getApplicationContext());
+                            adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
                             adapter.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {

@@ -2,6 +2,7 @@ package com.example.tunovelaonline.pojos;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class Novela implements Serializable{
     private Integer idNovela;
@@ -16,6 +17,7 @@ public class Novela implements Serializable{
     private String genero;
     private Date fechaSubida;
     private Integer idMarcapaginas;
+    private ArrayList<Capitulo> listaCapitulos;
 
     public Novela() {
     }
@@ -47,6 +49,37 @@ public class Novela implements Serializable{
         this.genero = genero;
         this.fechaSubida = fechaSubida;
         this.idMarcapaginas = idMarcapaginas;
+    }
+
+    public Novela(Integer idNovela, Integer idUsuario, String titulo, String portada, String resena, String nombreAlternativo, String autor, String artista, String traductor, String genero, Date fechaSubida, ArrayList<Capitulo> listaCapitulos) {
+        this.idNovela = idNovela;
+        this.idUsuario = idUsuario;
+        this.titulo = titulo;
+        this.portada = portada;
+        this.resena = resena;
+        this.nombreAlternativo = nombreAlternativo;
+        this.autor = autor;
+        this.artista = artista;
+        this.traductor = traductor;
+        this.genero = genero;
+        this.fechaSubida = fechaSubida;
+        this.listaCapitulos = listaCapitulos;
+    }
+
+    public Novela(Integer idNovela, Integer idUsuario, String titulo, String portada, String resena, String nombreAlternativo, String autor, String artista, String traductor, String genero, Date fechaSubida, Integer idMarcapaginas, ArrayList<Capitulo> listaCapitulos) {
+        this.idNovela = idNovela;
+        this.idUsuario = idUsuario;
+        this.titulo = titulo;
+        this.portada = portada;
+        this.resena = resena;
+        this.nombreAlternativo = nombreAlternativo;
+        this.autor = autor;
+        this.artista = artista;
+        this.traductor = traductor;
+        this.genero = genero;
+        this.fechaSubida = fechaSubida;
+        this.idMarcapaginas = idMarcapaginas;
+        this.listaCapitulos = listaCapitulos;
     }
 
     public Integer getIdNovela() {
@@ -144,4 +177,18 @@ public class Novela implements Serializable{
     public void setIdMarcapaginas(Integer idMarcapaginas) {
         this.idMarcapaginas = idMarcapaginas;
     }
+
+    public ArrayList<Capitulo> getListaCapitulos() {
+        return listaCapitulos;
+    }
+
+    public void setListaCapitulos(ArrayList<Capitulo> listaCapitulos) {
+        this.listaCapitulos = listaCapitulos;
+    }
+
+    @Override
+    public String toString() {
+        return "Novela{" + "idNovela=" + idNovela + ", idUsuario=" + idUsuario + ", titulo=" + titulo + ", portada=" + portada + ", resena=" + resena + ", nombreAlternativo=" + nombreAlternativo + ", autor=" + autor + ", artista=" + artista + ", traductor=" + traductor + ", genero=" + genero + ", fechaSubida=" + fechaSubida + ", idMarcapaginas=" + idMarcapaginas + ", listaCapitulos=" + listaCapitulos + '}';
+    }
+
 }

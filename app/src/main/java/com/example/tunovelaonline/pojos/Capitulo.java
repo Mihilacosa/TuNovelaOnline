@@ -10,7 +10,7 @@ public class Capitulo implements Serializable{
     private String titulo;
     private Integer numCapitulo;
     private String contenido;
-    private Date fechaSubida;
+    private String fechaSubida;
 
     public Capitulo() {
     }
@@ -21,7 +21,7 @@ public class Capitulo implements Serializable{
         this.numCapitulo = numCapitulo;
     }
 
-    public Capitulo(Integer idCapitulo, Integer idNovela, Integer idUsuario, String titulo, Integer numCapitulo, String contenido, Date fechaSubida) {
+    public Capitulo(Integer idCapitulo, Integer idNovela, Integer idUsuario, String titulo, Integer numCapitulo, String contenido, String fechaSubida) {
         this.idCapitulo = idCapitulo;
         this.idUsuario = idNovela;
         this.idUsuario = idUsuario;
@@ -79,11 +79,17 @@ public class Capitulo implements Serializable{
         this.contenido = contenido;
     }
 
-    public Date getFechaSubida() {
+    public String getFechaSubida() {
         return fechaSubida;
     }
 
-    public void setFechaSubida(Date fechaSubida) {
+    public void setFechaSubida(String fechaSubida) {
         this.fechaSubida = fechaSubida;
     }
+
+    @Override
+    public String toString() {
+        return "Capitulo{" + "idCapitulo=" + idCapitulo + ", idNovela=" + idNovela + ", idUsuario=" + idUsuario + ", titulo=" + titulo + ", numCapitulo=" + numCapitulo + ", contenido=" + contenido + ", fechaSubida=" + fechaSubida + '}';
+    }
+
 }

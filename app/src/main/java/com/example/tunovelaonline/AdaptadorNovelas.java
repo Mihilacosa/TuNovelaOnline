@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
@@ -15,7 +16,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.tunovelaonline.pojos.Novela;
 import com.squareup.picasso.Picasso;
 
+import org.ocpsoft.prettytime.PrettyTime;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.ViewHolderNovelas> implements View.OnClickListener{
 
@@ -42,8 +50,20 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
         holder.card.setAnimation(AnimationUtils.loadAnimation(context, R.anim.slide));
         holder.Titulo.setText(listaNovelas.get(position).getTitulo());
         holder.id.setText(listaNovelas.get(position).getIdNovela().toString());
-        //holder.imagen.setImageURI(Uri.parse(listaNovelas.get(position).getImagen()));
         Picasso.get().load(listaNovelas.get(position).getPortada()).into(holder.imagen);
+
+        holder.ultimo_id.setText(listaNovelas.get(position).getListaCapitulos().get(0).getIdCapitulo().toString());
+        holder.U_contenido.setText("Capítulo " + listaNovelas.get(position).getListaCapitulos().get(0).getNumCapitulo().toString() + " - " + listaNovelas.get(position).getListaCapitulos().get(0).getTitulo());
+        holder.U_hace.setText(Hace(listaNovelas.get(position).getListaCapitulos().get(0).getFechaSubida()));
+
+        if(listaNovelas.get(position).getListaCapitulos().size() == 1){
+            holder.penultimo.setVisibility(View.GONE);
+        }else{
+            holder.penultimo_id.setText(listaNovelas.get(position).getListaCapitulos().get(1).getIdCapitulo().toString());
+            holder.P_contenido.setText("Capítulo " + listaNovelas.get(position).getListaCapitulos().get(1).getNumCapitulo().toString() + " - " + listaNovelas.get(position).getListaCapitulos().get(1).getTitulo());
+            holder.P_hace.setText(Hace(listaNovelas.get(position).getListaCapitulos().get(1).getFechaSubida()));
+        }
+
     }
 
     @Override
@@ -63,10 +83,19 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
     }
 
     public class ViewHolderNovelas extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
-
+        //novela
         TextView Titulo, id;
         ImageView imagen;
         CardView card;
+
+        //cap1
+        LinearLayout ultimo;
+        TextView ultimo_id, U_contenido, U_hace;
+
+        //cap2
+        LinearLayout penultimo;
+        TextView penultimo_id, P_contenido, P_hace;
+
 
         public ViewHolderNovelas(View itemView) {
             super(itemView);
@@ -76,6 +105,15 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
             card = itemView.findViewById(R.id.cardx);
             card.setOnCreateContextMenuListener(this);
 
+            ultimo = itemView.findViewById(R.id.ultimoCapitulo);
+            ultimo_id = itemView.findViewById(R.id.ultimoId);
+            U_contenido = itemView.findViewById(R.id.capituloUltima);
+            U_hace = itemView.findViewById(R.id.tiempoUltimo);
+
+            penultimo = itemView.findViewById(R.id.penultimoCapitulo);
+            penultimo_id = itemView.findViewById(R.id.penultimoId);
+            P_contenido = itemView.findViewById(R.id.capituloPenultimo);
+            P_hace = itemView.findViewById(R.id.tiempoPenultimo);
         }
 
         @Override
@@ -93,5 +131,25 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
     public String mostrarTitulo (int position){
         String titulo = listaNovelas.get(position).getTitulo();
         return titulo;
+    }
+
+    public String mostrarId (int position) {
+        String id = String.valueOf(listaNovelas.get(position).getIdNovela());
+        return id;
+    }
+
+    public String Hace(String fecha){
+        long time = 0;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            time = sdf.parse(fecha).getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Date currentTime = Calendar.getInstance().getTime();
+
+        PrettyTime prettyTime = new PrettyTime(new Locale("ES"));
+        return prettyTime.format(new Date(time));
     }
 }

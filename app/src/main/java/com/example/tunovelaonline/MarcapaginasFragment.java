@@ -47,7 +47,7 @@ public class MarcapaginasFragment extends Fragment {
     String id_N;
 
     RecyclerView recyclerNovelas;
-    AdaptadorNovelasModificar adapter;
+    AdaptadorNovelas adapter;
 
     String id_usuario, id_novela;
     private FirebaseAuth mAuth;
@@ -98,7 +98,7 @@ public class MarcapaginasFragment extends Fragment {
                             recyclerNovelas = view.findViewById(R.id.RecyclerMarcapaginas);
                             recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                            adapter = new AdaptadorNovelasModificar(listaNovelas, getActivity().getApplicationContext());
+                            adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
                             adapter.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
