@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.confUsuario).setVisible(true);
                 nav_Menu.findItem(R.id.modificar).setVisible(true);
                 nav_Menu.findItem(R.id.confpreferencias).setVisible(true);
+                nav_Menu.findItem(R.id.marcapaginas).setVisible(true);
             }
         }
 
@@ -162,6 +163,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                         new PreferenciaFragment()).addToBackStack( "tag" ).commit();
                 break;
+            case R.id.marcapaginas:
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+                        new MarcapaginasFragment()).addToBackStack( "tag" ).commit();
+                break;
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
 
@@ -171,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.subir_novela).setVisible(false);
                 nav_Menu.findItem(R.id.confUsuario).setVisible(false);
                 nav_Menu.findItem(R.id.modificar).setVisible(false);
+                nav_Menu.findItem(R.id.confpreferencias).setVisible(false);
+                nav_Menu.findItem(R.id.marcapaginas).setVisible(false);
 
                 Intent i = new Intent(this, MainActivity.class);
 

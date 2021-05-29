@@ -40,8 +40,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -67,6 +69,7 @@ public class CapituloFragment extends Fragment {
 
     Button opciones;
     TextView contenido;
+    Boolean marcado = false;
 
     private String usuario = "";
     private FirebaseAuth mAuth;
@@ -87,6 +90,13 @@ public class CapituloFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_capitulo, container, false);
         equipoServidor = getString(R.string.ip_server);
+
+        Bundle bundle = this.getArguments();
+        id_novela = bundle.getString("id_nov");
+        id_capitulo = bundle.getString("id_cap");
+        id_cap = Integer.valueOf(id_capitulo);
+        Capitulos_id = (ArrayList<Integer>) bundle.getSerializable("ARRAYLIST");
+
         contenido = v.findViewById(R.id.Contenido_cap);
         content = v.findViewById(R.id.contenidoView);
         contexto = container.getContext();
@@ -96,10 +106,9 @@ public class CapituloFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
-            usuario = datos_usu.getString("usuario", "");
-            if (!usuario.equals("")) {
-                //setTitle("Hola " + usuario);
-            }
+            id_usuario = datos_usu.getString("id", "");
+
+            new Thread(new ComprobarMarca()).start();
         }
 
         SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
@@ -126,12 +135,6 @@ public class CapituloFragment extends Fragment {
 
         scroll = v.findViewById(R.id.Cap_scroll);
 
-        Bundle bundle = this.getArguments();
-        id_novela = bundle.getString("id_nov");
-        id_capitulo = bundle.getString("id_cap");
-        id_cap = Integer.valueOf(id_capitulo);
-        Capitulos_id = (ArrayList<Integer>) bundle.getSerializable("ARRAYLIST");
-
         for (int i = 0; i < Capitulos_id.size(); i++){
             if(Capitulos_id.get(i).equals(id_cap)){
                 posicion = i;
@@ -153,8 +156,6 @@ public class CapituloFragment extends Fragment {
             Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
             Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
         }
-
-        new Thread(new CargarCapitulo()).start();
 
         Anterior.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -279,6 +280,7 @@ public class CapituloFragment extends Fragment {
             }
         });
 
+        new Thread(new CargarCapitulo()).start();
         return v;
     }
 
@@ -313,15 +315,18 @@ public class CapituloFragment extends Fragment {
                 dos.close();
                 ois.close();
 
+                socketCliente.close();
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         Titulo.setText("Capítulo: " + capitulo.getNumCapitulo() + " - " + capitulo.getTitulo());
                         Contenido.setText(capitulo.getContenido());
+                        if(marcado == true){
+                            new Thread(new ActualizarMarcador()).start();
+                        }
                     }
                 });
 
-                socketCliente.close();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -330,8 +335,89 @@ public class CapituloFragment extends Fragment {
         }
     }
 
-    public void displayPopup()
-    {
+    class ComprobarMarca implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("comprobar marcapaginas");
+
+                dos.writeUTF(id_usuario);
+
+                dos.writeUTF(id_novela);
+
+                InputStream is = socketCliente.getInputStream();
+                DataInputStream dis = new DataInputStream(is);
+                if(dis.readUTF().equals("gg")){
+                    marcado = true;
+                }else{
+                    marcado = false;
+                }
+
+                os.close();
+                dos.close();
+                is.close();
+                dis.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(marcado == true){
+
+                        }else{
+
+                        }
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class ActualizarMarcador implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("actualizar marcapaginas");
+
+                dos.writeUTF(id_usuario);
+
+                dos.writeUTF(id_novela);
+
+                dos.writeUTF(id_capitulo);
+
+                os.close();
+                dos.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(marcado == true){
+
+                        }else{
+
+                        }
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void displayPopup(){
         View popupView = LayoutInflater.from(getActivity()).inflate(R.layout.pop_up, null);
         final PopupWindow popupWindow = new PopupWindow(popupView, WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT, true);
         popupWindow.showAtLocation(v.findViewById(R.id.Cap_scroll), Gravity.CENTER, 0, 0);

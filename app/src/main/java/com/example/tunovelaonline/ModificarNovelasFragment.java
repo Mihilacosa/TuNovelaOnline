@@ -156,13 +156,31 @@ public class ModificarNovelasFragment extends Fragment {
                                             }
                                             else if (options[item].equals("Eliminar"))
                                             {
-                                                new Thread(new EliminarNovela()).start();
-                                                new android.os.Handler().postDelayed(new Runnable() {
+                                                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                                                     @Override
-                                                    public void run() {
-                                                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,new ModificarNovelasFragment()).commit();
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        switch (which){
+                                                            case DialogInterface.BUTTON_POSITIVE:
+
+                                                                new Thread(new EliminarNovela()).start();
+                                                                new android.os.Handler().postDelayed(new Runnable() {
+                                                                    @Override
+                                                                    public void run() {
+                                                                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,new ModificarNovelasFragment()).commit();
+                                                                    }
+                                                                },1000); // milliseconds: 1 seg.
+
+                                                                break;
+                                                            case DialogInterface.BUTTON_NEGATIVE:
+                                                                //No button clicked
+                                                                break;
+                                                        }
                                                     }
-                                                },1000); // milliseconds: 1 seg.
+                                                };
+
+                                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                                builder.setMessage("Estasn seguro de eliminar la novela?").setPositiveButton("Si", dialogClickListener)
+                                                        .setNegativeButton("No", dialogClickListener).show();
                                             }
                                             else if (options[item].equals("Cancelar")) {
                                                 dialog.dismiss();
@@ -217,58 +235,4 @@ public class ModificarNovelasFragment extends Fragment {
         }
     }
 
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case 120:
-                String id_novela_eliminar = adapter.mostrarId(item.getGroupId());
-
-                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which){
-                            case DialogInterface.BUTTON_POSITIVE:
-
-                                StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://tnowebservice.000webhostapp.com/Eliminar_novela.php", new Response.Listener<String>() {
-                                    @Override
-                                    public void onResponse(String response) {
-
-                                    }
-                                }, new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        Toast.makeText(getContext(), error.toString(), Toast.LENGTH_SHORT).show();
-                                    }
-                                }) {
-                                    @Override
-                                    protected Map<String, String> getParams() throws AuthFailureError {
-                                        Map<String, String> parametros = new HashMap<String, String>();
-                                        parametros.put("id_novela", id_novela_eliminar);
-                                        return parametros;
-                                    }
-                                };
-
-                                requestQueue = Volley.newRequestQueue(getContext());
-                                requestQueue.add(stringRequest);
-
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,new ModificarNovelasFragment()).commit();
-
-                                break;
-
-                            case DialogInterface.BUTTON_NEGATIVE:
-                                //No button clicked
-                                break;
-                        }
-                    }
-                };
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setMessage("Estasn seguro de eliminar la novela?").setPositiveButton("Si", dialogClickListener)
-                        .setNegativeButton("No", dialogClickListener).show();
-                return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
 }

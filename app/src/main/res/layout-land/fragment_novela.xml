@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/fondo"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,6 +40,13 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/btn_marc"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="-18dp"
+            tools:srcCompat="@drawable/ic_marc_mas" />
 
         <androidx.cardview.widget.CardView
             app:cardCornerRadius="8dp"

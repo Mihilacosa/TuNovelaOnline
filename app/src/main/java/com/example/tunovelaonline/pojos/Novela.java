@@ -15,6 +15,7 @@ public class Novela implements Serializable{
     private String traductor;
     private String genero;
     private Date fechaSubida;
+    private Integer idMarcapaginas;
 
     public Novela() {
     }
@@ -31,6 +32,21 @@ public class Novela implements Serializable{
         this.traductor = traductor;
         this.genero = genero;
         this.fechaSubida = fechaSubida;
+    }
+
+    public Novela(Integer idNovela, Integer idUsuario, String titulo, String portada, String resena, String nombreAlternativo, String autor, String artista, String traductor, String genero, Date fechaSubida, Integer idMarcapaginas) {
+        this.idNovela = idNovela;
+        this.idUsuario = idUsuario;
+        this.titulo = titulo;
+        this.portada = portada;
+        this.resena = resena;
+        this.nombreAlternativo = nombreAlternativo;
+        this.autor = autor;
+        this.artista = artista;
+        this.traductor = traductor;
+        this.genero = genero;
+        this.fechaSubida = fechaSubida;
+        this.idMarcapaginas = idMarcapaginas;
     }
 
     public Integer getIdNovela() {
@@ -119,5 +135,13 @@ public class Novela implements Serializable{
 
     public void setFechaSubida(Date fechaSubida) {
         this.fechaSubida = fechaSubida;
+    }
+
+    public Integer getIdMarcapaginas() {
+        return idMarcapaginas;
+    }
+
+    public void setIdMarcapaginas(Integer idMarcapaginas) {
+        this.idMarcapaginas = idMarcapaginas;
     }
 }

@@ -45,6 +45,11 @@
             android:title="Preferencias"
             android:visible="false" />
         <item
+            android:id="@+id/marcapaginas"
+            android:icon="@drawable/ic_marcapaginas"
+            android:title="Marcapaginas"
+            android:visible="false" />
+        <item
             android:id="@+id/logout"
             android:icon="@drawable/ic_logout"
             android:title="@string/cerrar_sesi_n"

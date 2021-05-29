@@ -106,7 +106,25 @@ public class ModificarCapitulosFragment extends Fragment {
                                         }
                                         else if (options[item].equals("Eliminar"))
                                         {
-                                            new Thread(new EliminarCapitulo()).start();
+                                            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    switch (which){
+                                                        case DialogInterface.BUTTON_POSITIVE:
+
+                                                            new Thread(new EliminarCapitulo()).start();
+
+                                                            break;
+                                                        case DialogInterface.BUTTON_NEGATIVE:
+                                                            //No button clicked
+                                                            break;
+                                                    }
+                                                }
+                                            };
+
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                                            builder.setMessage("Estasn seguro de eliminar el capitulo?").setPositiveButton("Si", dialogClickListener)
+                                                    .setNegativeButton("No", dialogClickListener).show();
                                         }
                                         else if (options[item].equals("Cancelar")) {
                                             dialog.dismiss();

@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -39,8 +40,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
@@ -66,13 +69,17 @@ public class NovelaFragment extends Fragment {
     private String id_capitulo;
     private String id_novela;
     Boolean suscrito = false;
-
+    ImageView marc;
+    Integer cambio_marc = 0;
     View v;
+    String id_usuario;
+    Boolean marcado = false;
 
     RecyclerView recyclerCapitulos;
     LinearLayout desplegable, Adesplegar;
     TextView tit_alt, autor, artista, traductor, genero, fecha;
     private AdView mAdView;
+    FirebaseAuth mAuth;
 
     private  String usuario = "";
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,6 +97,9 @@ public class NovelaFragment extends Fragment {
         Adesplegar.setVisibility(View.GONE);
         imgDespliegue = v.findViewById(R.id.imgDesplegable);
 
+        marc = v.findViewById(R.id.btn_marc);
+        marc.setImageResource(R.drawable.ic_marc_mas);
+
         tit_alt.setVisibility(View.GONE);
         artista.setVisibility(View.GONE);
         traductor.setVisibility(View.GONE);
@@ -100,9 +110,10 @@ public class NovelaFragment extends Fragment {
             }
         });
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+            id_usuario = datos_usu.getString("id", "");
             usuario = datos_usu.getString("usuario", "");
             fecha_sus = datos_usu.getString("suscripcion", "");
 
@@ -119,6 +130,8 @@ public class NovelaFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+        } else {
+            marc.setVisibility(View.GONE);
         }
 
         mAdView = v.findViewById(R.id.adView);
@@ -151,6 +164,22 @@ public class NovelaFragment extends Fragment {
                     Adesplegar.setVisibility(View.GONE);
                 }
 
+            }
+        });
+
+        marc.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                if(cambio_marc == 0){
+                    marc.setImageResource(R.drawable.ic_marc_mas);
+                    cambio_marc = 1;
+                    new Thread(new EliminarMarca()).start();
+                }else{
+                    marc.setImageResource(R.drawable.ic_marc_menos);
+                    cambio_marc = 0;
+                    new Thread(new CrearMarca()).start();
+                }
             }
         });
 
@@ -279,6 +308,10 @@ public class NovelaFragment extends Fragment {
                         });
 
                         recyclerCapitulos.setAdapter(adapter);
+
+                        if(mAuth.getCurrentUser() != null){
+                            new Thread(new ComprobarMarca()).start();
+                        }
                     }
                 });
 
@@ -286,6 +319,103 @@ public class NovelaFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class ComprobarMarca implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("comprobar marcapaginas");
+
+                dos.writeUTF(id_usuario);
+
+                dos.writeUTF(id_novela);
+
+                InputStream is = socketCliente.getInputStream();
+                DataInputStream dis = new DataInputStream(is);
+                if(dis.readUTF().equals("gg")){
+                    marcado = true;
+                }else{
+                    marcado = false;
+                }
+
+                os.close();
+                dos.close();
+                is.close();
+                dis.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(marcado == true){
+                            marc.setImageResource(R.drawable.ic_marc_menos);
+                            cambio_marc = 0;
+                        }else{
+                            marc.setImageResource(R.drawable.ic_marc_mas);
+                            cambio_marc = 1;
+                        }
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class EliminarMarca implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("eliminar marcapaginas");
+
+                dos.writeUTF(id_usuario);
+
+                dos.writeUTF(id_novela);
+
+                os.close();
+                dos.close();
+
+                socketCliente.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    class CrearMarca implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("crear marcapaginas");
+
+                dos.writeUTF(id_usuario);
+                dos.writeUTF(id_novela);
+                dos.writeUTF(Lista.get(0).getIdCapitulo().toString());
+
+                os.close();
+                dos.close();
+
+                socketCliente.close();
+
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
