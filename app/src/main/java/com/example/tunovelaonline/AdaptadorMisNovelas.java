@@ -25,14 +25,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.ViewHolderNovelas> implements View.OnClickListener{
+public class AdaptadorMisNovelas extends RecyclerView.Adapter<AdaptadorMisNovelas.ViewHolderNovelas> implements View.OnClickListener{
 
     ArrayList<Novela> listaNovelas;
     private View.OnClickListener listener;
     private LayoutInflater mInflater;
     private Context context;
 
-    public AdaptadorNovelas(ArrayList<Novela> listaNovelas, Context context) {
+    public AdaptadorMisNovelas(ArrayList<Novela> listaNovelas, Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.listaNovelas = listaNovelas;
@@ -82,7 +82,7 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
         }
     }
 
-    public class ViewHolderNovelas extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener{
+    public class ViewHolderNovelas extends RecyclerView.ViewHolder{
         //novela
         TextView Titulo, id;
         ImageView imagen;
@@ -103,7 +103,6 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
             id = itemView.findViewById(R.id.id_novelax);
             imagen = itemView.findViewById(R.id.portadax);
             card = itemView.findViewById(R.id.cardx);
-            card.setOnCreateContextMenuListener(this);
 
             ultimo = itemView.findViewById(R.id.ultimoCapitulo);
             ultimo_id = itemView.findViewById(R.id.ultimoId);
@@ -115,44 +114,6 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
             P_contenido = itemView.findViewById(R.id.capituloPenultimo);
             P_hace = itemView.findViewById(R.id.tiempoPenultimo);
         }
-
-        @Override
-        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-            menu.setHeaderTitle("Seleccione una opción");
-            menu.add(this.getAdapterPosition(), 120, 0, "Reseña");
-            menu.add(this.getAdapterPosition(), 121, 0, "Ultimo capítulo");
-            menu.add(this.getAdapterPosition(), 122, 0, "Penultimo capítulo");
-        }
-    }
-
-    public String mostrarResena (int position){
-        String resena = listaNovelas.get(position).getResena();
-        return resena;
-    }
-
-    public String mostrarTitulo (int position){
-        String titulo = listaNovelas.get(position).getTitulo();
-        return titulo;
-    }
-
-    public String mostrarId (int position) {
-        String id = String.valueOf(listaNovelas.get(position).getIdNovela());
-        return id;
-    }
-
-    public String mostrarId_U (int position) {
-        String id = String.valueOf(listaNovelas.get(position).getListaCapitulos().get(0).getIdCapitulo());
-        return id;
-    }
-
-    public String mostrarId_P (int position) {
-        String id = String.valueOf(listaNovelas.get(position).getListaCapitulos().get(1).getIdCapitulo());
-        return id;
-    }
-
-    public int tamano (int position) {
-        int ta = listaNovelas.get(position).getListaCapitulos().size();
-        return ta;
     }
 
     public String Hace(String fecha){

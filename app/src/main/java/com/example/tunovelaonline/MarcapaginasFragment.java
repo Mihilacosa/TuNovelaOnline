@@ -44,10 +44,11 @@ public class MarcapaginasFragment extends Fragment {
     Novela novela;
     NovelaFragment fragNovela;
     ArrayList<Novela> listaNovelas = new ArrayList();
-    String id_N;
+    String id_N, id_capU, id_capP;
 
     RecyclerView recyclerNovelas;
-    AdaptadorNovelas adapter;
+    AdaptadorMarcapaginas adapter;
+    CapituloFragment capitulo;
 
     String id_usuario, id_novela;
     private FirebaseAuth mAuth;
@@ -98,7 +99,7 @@ public class MarcapaginasFragment extends Fragment {
                             recyclerNovelas = view.findViewById(R.id.RecyclerMarcapaginas);
                             recyclerNovelas.setLayoutManager(new LinearLayoutManager(getContext()));
 
-                            adapter = new AdaptadorNovelas(listaNovelas, getActivity().getApplicationContext());
+                            adapter = new AdaptadorMarcapaginas(listaNovelas, getActivity().getApplicationContext());
                             adapter.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
@@ -156,6 +157,30 @@ public class MarcapaginasFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setMessage("Estasn seguro de eliminar el marcapaginas?").setPositiveButton("Si", dialogClickListener)
                         .setNegativeButton("No", dialogClickListener).show();
+
+                return true;
+            case 121:
+                id_N = adapter.mostrarId(item.getGroupId());
+                id_capU = adapter.mostrarId_U(item.getGroupId());
+
+                Bundle bundle = new Bundle();
+                bundle.putString("id_nov",id_N);
+                bundle.putString("id_cap",id_capU);
+                capitulo = new CapituloFragment();
+                capitulo.setArguments(bundle);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                return true;
+            case 122:
+                id_N = adapter.mostrarId(item.getGroupId());
+                id_capP = adapter.mostrarId_P(item.getGroupId());
+
+                Bundle bundle2 = new Bundle();
+                bundle2.putString("id_nov",id_N);
+                bundle2.putString("id_cap",id_capP);
+                capitulo = new CapituloFragment();
+                capitulo.setArguments(bundle2);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+
                 return true;
 
             default:

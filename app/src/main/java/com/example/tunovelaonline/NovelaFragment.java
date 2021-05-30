@@ -65,7 +65,6 @@ public class NovelaFragment extends Fragment {
     private ImageView portada, imgDespliegue;
     private ListView Lista_caps;
     private ArrayList<Capitulo> Lista = new ArrayList<>();
-    private ArrayList<Integer> Capitulos_id = new ArrayList<>();
     private String id_capitulo;
     private String id_novela;
     Boolean suscrito = false;
@@ -281,12 +280,6 @@ public class NovelaFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-
-                        Iterator<Capitulo> caps = Lista.iterator();
-                        while(caps.hasNext()){
-                            Capitulos_id.add(caps.next().getIdCapitulo());
-                        }
-
                         recyclerCapitulos = v.findViewById(R.id.RecyclerCapitulos);
                         recyclerCapitulos.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -300,7 +293,6 @@ public class NovelaFragment extends Fragment {
                                 Bundle bundle = new Bundle();
                                 bundle.putString("id_nov",id_novela);
                                 bundle.putString("id_cap",id_capitulo);
-                                bundle.putSerializable("ARRAYLIST", Capitulos_id);
                                 CapituloFragment capitulo = new CapituloFragment();
                                 capitulo.setArguments(bundle);
                                 getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();

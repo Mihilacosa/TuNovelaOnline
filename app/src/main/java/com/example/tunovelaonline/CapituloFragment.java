@@ -63,10 +63,12 @@ public class CapituloFragment extends Fragment {
     private String id_novela;
     private String id_capitulo;
     private ArrayList<Integer> Capitulos_id = new ArrayList<>();
+    private ArrayList<Capitulo> Lista = new ArrayList<>();
     private int posicion = 0;
     private Integer id_cap;
     private ScrollView scroll;
-
+    Button Anterior, Indice, Siguiente, Anterior2, Indice2, Siguiente2;
+    int cap_max;
     Button opciones;
     TextView contenido;
     Boolean marcado = false;
@@ -95,7 +97,6 @@ public class CapituloFragment extends Fragment {
         id_novela = bundle.getString("id_nov");
         id_capitulo = bundle.getString("id_cap");
         id_cap = Integer.valueOf(id_capitulo);
-        Capitulos_id = (ArrayList<Integer>) bundle.getSerializable("ARRAYLIST");
 
         contenido = v.findViewById(R.id.Contenido_cap);
         content = v.findViewById(R.id.contenidoView);
@@ -125,37 +126,15 @@ public class CapituloFragment extends Fragment {
         color_fondo(color);
 
         opciones = v.findViewById(R.id.btnOpciones);
-        Button Anterior = v.findViewById(R.id.Anterior);
-        Button Indice = v.findViewById(R.id.Indice);
-        Button Siguiente = v.findViewById(R.id.Siguiente);
+        Anterior = v.findViewById(R.id.Anterior);
+        Indice = v.findViewById(R.id.Indice);
+        Siguiente = v.findViewById(R.id.Siguiente);
 
-        Button Anterior2 = v.findViewById(R.id.Anterior2);
-        Button Indice2 = v.findViewById(R.id.Indice2);
-        Button Siguiente2 = v.findViewById(R.id.Siguiente2);
+        Anterior2 = v.findViewById(R.id.Anterior2);
+        Indice2 = v.findViewById(R.id.Indice2);
+        Siguiente2 = v.findViewById(R.id.Siguiente2);
 
         scroll = v.findViewById(R.id.Cap_scroll);
-
-        for (int i = 0; i < Capitulos_id.size(); i++){
-            if(Capitulos_id.get(i).equals(id_cap)){
-                posicion = i;
-            }
-        }
-
-        int cap_max = Capitulos_id.size() - 1;
-
-        if(posicion == 0){
-            Anterior.setEnabled(false);
-            Anterior2.setEnabled(false);
-            Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
-            Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
-        }
-
-        if(posicion == cap_max){
-            Siguiente.setEnabled(false);
-            Siguiente2.setEnabled(false);
-            Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
-            Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
-        }
 
         Anterior.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -279,8 +258,12 @@ public class CapituloFragment extends Fragment {
                 displayPopup();
             }
         });
-
-        new Thread(new CargarCapitulo()).start();
+        new android.os.Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                new Thread(new CargarCapitulo()).start();
+            }
+        },200); // milliseconds: 1 seg.
         return v;
     }
 
@@ -292,6 +275,69 @@ public class CapituloFragment extends Fragment {
         NovelaFragment novela = new NovelaFragment();
         novela.setArguments(bundle);
         getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+    }
+
+    class CargarCapitulos implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("mostrar capitulos");
+
+                os = socketCliente.getOutputStream();
+                dos = new DataOutputStream(os);
+                dos.writeUTF(id_novela);
+
+                ObjectInputStream ois = new ObjectInputStream(socketCliente.getInputStream());
+                Lista = (ArrayList<Capitulo>) ois.readObject();
+
+                os.close();
+                dos.close();
+                ois.close();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+                    @Override
+                    public void run() {
+                        Iterator<Capitulo> caps = Lista.iterator();
+                        while(caps.hasNext()){
+                            Capitulos_id.add(caps.next().getIdCapitulo());
+                        }
+
+                        for (int i = 0; i < Capitulos_id.size(); i++){
+                            if(Capitulos_id.get(i).equals(id_cap)){
+                                posicion = i;
+                            }
+                        }
+
+                        cap_max = Capitulos_id.size() - 1;
+
+                        if(posicion == 0){
+                            Anterior.setEnabled(false);
+                            Anterior2.setEnabled(false);
+                            Anterior.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+                            Anterior2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+                        }
+
+                        if(posicion == cap_max){
+                            Siguiente.setEnabled(false);
+                            Siguiente2.setEnabled(false);
+                            Siguiente.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+                            Siguiente2.setBackgroundTintList(getResources().getColorStateList(R.color.purple_200));
+                        }
+                    }
+                });
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     class CargarCapitulo implements Runnable {
@@ -323,6 +369,15 @@ public class CapituloFragment extends Fragment {
                         Contenido.setText(capitulo.getContenido());
                         if(marcado == true){
                             new Thread(new ActualizarMarcador()).start();
+                        }
+
+                        if(Lista.isEmpty()){
+                            new android.os.Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new Thread(new CargarCapitulos()).start();
+                                }
+                            },500); // milliseconds: 1 seg.
                         }
                     }
                 });
@@ -362,17 +417,6 @@ public class CapituloFragment extends Fragment {
                 is.close();
                 dis.close();
 
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(marcado == true){
-
-                        }else{
-
-                        }
-                    }
-                });
-
                 socketCliente.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -398,17 +442,6 @@ public class CapituloFragment extends Fragment {
 
                 os.close();
                 dos.close();
-
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(marcado == true){
-
-                        }else{
-
-                        }
-                    }
-                });
 
                 socketCliente.close();
             } catch (IOException e) {

@@ -25,14 +25,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.ViewHolderNovelas> implements View.OnClickListener{
+public class AdaptadorMarcapaginas extends RecyclerView.Adapter<AdaptadorMarcapaginas.ViewHolderNovelas> implements View.OnClickListener{
 
     ArrayList<Novela> listaNovelas;
     private View.OnClickListener listener;
     private LayoutInflater mInflater;
     private Context context;
 
-    public AdaptadorNovelas(ArrayList<Novela> listaNovelas, Context context) {
+    public AdaptadorMarcapaginas(ArrayList<Novela> listaNovelas, Context context) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.listaNovelas = listaNovelas;
@@ -120,8 +120,8 @@ public class AdaptadorNovelas extends RecyclerView.Adapter<AdaptadorNovelas.View
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
             menu.setHeaderTitle("Seleccione una opción");
             menu.add(this.getAdapterPosition(), 120, 0, "Reseña");
-            menu.add(this.getAdapterPosition(), 121, 0, "Ultimo capítulo");
-            menu.add(this.getAdapterPosition(), 122, 0, "Penultimo capítulo");
+            menu.add(this.getAdapterPosition(), 121, 0, "Ultimo capítulo visto");
+            menu.add(this.getAdapterPosition(), 122, 0, "Ultimo capítulo");
         }
     }
 

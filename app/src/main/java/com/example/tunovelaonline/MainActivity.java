@@ -170,6 +170,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.logout:
                 FirebaseAuth.getInstance().signOut();
 
+                SharedPreferences datos_usu = getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = datos_usu.edit();
+
+                editor.putString("tamano", "14");
+                editor.putString("font", "Open sans");
+                editor.putString("color", "blanco");
+                editor.apply();
+
                 nav_Menu.findItem(R.id.login).setVisible(true);
                 nav_Menu.findItem(R.id.registro).setVisible(true);
                 nav_Menu.findItem(R.id.logout).setVisible(false);

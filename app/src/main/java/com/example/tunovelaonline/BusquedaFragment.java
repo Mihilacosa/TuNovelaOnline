@@ -38,6 +38,8 @@ public class BusquedaFragment extends Fragment {
     RecyclerView recyclerNovelas;
     AdaptadorNovelas adapter;
     EditText barra;
+    CapituloFragment capitulo;
+    String id_N,id_capU, id_capP;
 
     NovelaFragment novela;
     View view;
@@ -107,7 +109,7 @@ public class BusquedaFragment extends Fragment {
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
 
                 Bundle bundle = new Bundle();
                 bundle.putString("id",id_N);
@@ -185,6 +187,30 @@ public class BusquedaFragment extends Fragment {
                 resenya.show();
                 return true;
             case 121:
+                id_N = adapter.mostrarId(item.getGroupId());
+                id_capU = adapter.mostrarId_U(item.getGroupId());
+
+                Bundle bundle = new Bundle();
+                bundle.putString("id_nov",id_N);
+                bundle.putString("id_cap",id_capU);
+                capitulo = new CapituloFragment();
+                capitulo.setArguments(bundle);
+                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                return true;
+            case 122:
+                if(adapter.tamano(item.getGroupId()) == 1){
+                    Toast.makeText(getContext(), "Esta novela solo tiene un capítulo.", Toast.LENGTH_SHORT).show();
+                }else{
+                    id_N = adapter.mostrarId(item.getGroupId());
+                    id_capP = adapter.mostrarId_P(item.getGroupId());
+
+                    Bundle bundle2 = new Bundle();
+                    bundle2.putString("id_nov",id_N);
+                    bundle2.putString("id_cap",id_capP);
+                    capitulo = new CapituloFragment();
+                    capitulo.setArguments(bundle2);
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                }
                 return true;
 
             default:
