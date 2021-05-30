@@ -1,19 +1,24 @@
 package com.example.tunovelaonline;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -25,6 +30,7 @@ import com.android.volley.toolbox.Volley;
 import com.example.tunovelaonline.pojos.Novela;
 import com.example.tunovelaonline.pojos.Usuario;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,6 +56,7 @@ public class LoginFragment extends Fragment {
     Socket socketCliente;
     Usuario usuario = null;
 
+    TextView olvidada;
     private EditText email;
     private EditText contrasena;
     private Button Login;
@@ -62,7 +69,7 @@ public class LoginFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
         equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
-
+        olvidada = v.findViewById(R.id.contOlvidada);
         humano = v.findViewById(R.id.humano);
 
         mAuth = FirebaseAuth.getInstance();
@@ -107,7 +114,66 @@ public class LoginFragment extends Fragment {
             }
         });
 
+        olvidada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRecuperacion();
+            }
+        });
+
         return v;
+    }
+
+    public void showRecuperacion(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        builder.setTitle("Recuperación de contraseña");
+        LinearLayout linearLayout=new LinearLayout(getContext());
+        final EditText emailet= new EditText(getContext());
+
+        // write the email using which you registered
+        emailet.setText("Email");
+        emailet.setMinEms(16);
+        emailet.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        linearLayout.addView(emailet);
+        linearLayout.setPadding(10,10,10,10);
+        builder.setView(linearLayout);
+
+        // Click on Recover and a email will be sent to your registered email id
+        builder.setPositiveButton("Recuperar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String emaill=emailet.getText().toString().trim();
+                beginRecovery(emaill);
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    void beginRecovery(String emaill) {
+        mAuth.sendPasswordResetEmail(emaill).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful())
+                {
+                    Toast.makeText(getContext(),"Email mandado.",Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(getContext(),"Ha ocurido un error.",Toast.LENGTH_LONG).show();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getContext(),"Error Failed",Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     class EnvioLogin implements Runnable {

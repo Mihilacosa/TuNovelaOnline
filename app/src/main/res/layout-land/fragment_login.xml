@@ -82,6 +82,15 @@
                 tools:ignore="LabelFor" />
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/contOlvidada"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="434dp"
+            android:layout_marginLeft="434dp"
+            android:text="Contraseña olvidada"
+            android:textColor="#000000"/>
+
         <CheckBox
             android:id="@+id/humano"
             android:layout_width="wrap_content"
