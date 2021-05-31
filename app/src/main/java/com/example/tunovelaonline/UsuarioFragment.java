@@ -140,7 +140,7 @@ public class UsuarioFragment extends Fragment {
 
                 if(hoyFecha.before(date)){
                     paypal.setVisibility(View.GONE);
-                    textSuscripcion.setText("Suscripción hasta: " + date);
+                    textSuscripcion.setText("Suscripción hasta: " + fecha);
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -193,14 +193,14 @@ public class UsuarioFragment extends Fragment {
                 if(usu.equals(usuario) || usu.isEmpty()){
 
                 }else{
-                    usu = usuario;
+                    usuario= usu;
                     usuDif = true;
                 }
 
                 if(email.equals(usu_email) || email.isEmpty()){
 
                 }else{
-                    email = usu_email;
+                    usu_email = email;
                     emailDif = true;
                     CambioEmail();
                 }
@@ -235,7 +235,7 @@ public class UsuarioFragment extends Fragment {
                     editor.putString("imagen", "https://tnowebservice.000webhostapp.com/img/" + imagename);
                     editor.apply();
 
-                    if(boton_imagen == false){
+                    if(boton_imagen == true){
                         SubirImagen(bitmap);
                     }
                     new Thread(new CambioDatosUsuario()).start();
@@ -338,6 +338,14 @@ public class UsuarioFragment extends Fragment {
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
+                                SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = datos_usu.edit();
+
+                                editor.putString("usuario", usu);
+                                editor.putString("email", email);
+                                editor.putString("imagen", "https://tnowebservice.000webhostapp.com/img/" + imagename);
+                                editor.apply();
+
                                 Intent i = new Intent(getContext(), MainActivity.class);
                                 startActivity(i);
                             }
@@ -569,7 +577,7 @@ public class UsuarioFragment extends Fragment {
             @Override
             protected Map<String, DataPart> getByteData() {
                 Map<String, DataPart> params = new HashMap<>();
-                params.put("imagen", new DataPart(imagename + extension, getFileDataFromDrawable(bitmap)));
+                params.put("imagen", new DataPart(imagename, getFileDataFromDrawable(bitmap)));
                 return params;
             }
         };

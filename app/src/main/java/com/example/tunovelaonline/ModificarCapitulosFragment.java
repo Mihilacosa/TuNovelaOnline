@@ -1,7 +1,9 @@
 package com.example.tunovelaonline;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -168,18 +170,22 @@ public class ModificarCapitulosFragment extends Fragment {
 
                 socketCliente.close();
 
-                Bundle bundle = new Bundle();
-                bundle.putString("id",id_novela);
-                bundle.putString("titulo",titulo_Novela);
-                modCapitulo = new ModificarCapitulosFragment();
-                modCapitulo.setArguments(bundle);
-                new android.os.Handler().postDelayed(new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("id",id_novela);
+                        bundle.putString("titulo",titulo_Novela);
+                        modCapitulo = new ModificarCapitulosFragment();
+                        modCapitulo.setArguments(bundle);
+                        new android.os.Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,modCapitulo).commit();
+                            }
+                        },500); // milliseconds: 1 seg.
                     }
-                },1000); // milliseconds: 1 seg.
-
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }

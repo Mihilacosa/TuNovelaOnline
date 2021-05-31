@@ -68,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 name.setText(usuario);
                 email.setText(usu_email);
                 if(imagen_fire.equals("") || imagen_fire.equals(" ")){
-
+                    imagen.setImageResource(R.drawable.ic_user);
                 }else{
                     Picasso.get().load(imagen_fire).noPlaceholder().centerCrop().fit().into(imagen);
                 }
