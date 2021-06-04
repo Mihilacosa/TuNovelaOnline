@@ -1,8 +1,11 @@
 package com.example.tunovelaonline;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -20,6 +23,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tunovelaonline.pojos.Novela;
+import com.google.android.gms.ads.InterstitialAd;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -27,6 +31,9 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class BusquedaFragment extends Fragment {
     String equipoServidor;
@@ -39,7 +46,8 @@ public class BusquedaFragment extends Fragment {
     AdaptadorNovelas adapter;
     EditText barra;
     CapituloFragment capitulo;
-    String id_N,id_capU, id_capP;
+    String id_N,id_capU, id_capP, fecha;
+    private InterstitialAd interstitialAd;
 
     NovelaFragment novela;
     View view;
@@ -49,6 +57,12 @@ public class BusquedaFragment extends Fragment {
         new Thread(new Cargar()).start();
         recyclerNovelas = view.findViewById(R.id.ReyclerBusqueda);
         barra = view.findViewById(R.id.BarraBusqueda);
+        loadInterstitialAd();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null){
+            SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+            fecha = datos_usu.getString("suscripcion", "");
+        }
 
         barra.addTextChangedListener(textWatcher);
 
@@ -61,6 +75,12 @@ public class BusquedaFragment extends Fragment {
 
 
         return view;
+    }
+
+    private void loadInterstitialAd() {
+        interstitialAd = new InterstitialAd(getActivity());
+        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/3419835294");
+        interstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     private TextWatcher textWatcher = new TextWatcher() {
@@ -109,13 +129,29 @@ public class BusquedaFragment extends Fragment {
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                if(fecha == "true"){
+                    id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
 
-                Bundle bundle = new Bundle();
-                bundle.putString("id",id_N);
-                novela = new NovelaFragment();
-                novela.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("id",id_N);
+                    novela = new NovelaFragment();
+                    novela.setArguments(bundle);
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                }else{
+                    interstitialAd.show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("id",id_N);
+                            novela = new NovelaFragment();
+                            novela.setArguments(bundle);
+                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).commit();
+                        }
+                    }, 200);
+                }
             }
         });
         recyclerNovelas.setAdapter(adapter);
@@ -187,29 +223,65 @@ public class BusquedaFragment extends Fragment {
                 resenya.show();
                 return true;
             case 121:
-                id_N = adapter.mostrarId(item.getGroupId());
-                id_capU = adapter.mostrarId_U(item.getGroupId());
+                if(fecha == "true"){
+                    id_N = adapter.mostrarId(item.getGroupId());
+                    id_capU = adapter.mostrarId_U(item.getGroupId());
 
-                Bundle bundle = new Bundle();
-                bundle.putString("id_nov",id_N);
-                bundle.putString("id_cap",id_capU);
-                capitulo = new CapituloFragment();
-                capitulo.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("id_nov",id_N);
+                    bundle.putString("id_cap",id_capU);
+                    capitulo = new CapituloFragment();
+                    capitulo.setArguments(bundle);
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                }else{
+                    interstitialAd.show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            id_N = adapter.mostrarId(item.getGroupId());
+                            id_capU = adapter.mostrarId_U(item.getGroupId());
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("id_nov",id_N);
+                            bundle.putString("id_cap",id_capU);
+                            capitulo = new CapituloFragment();
+                            capitulo.setArguments(bundle);
+                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                        }
+                    }, 200);
+                }
                 return true;
             case 122:
                 if(adapter.tamano(item.getGroupId()) == 1){
                     Toast.makeText(getContext(), "Esta novela solo tiene un capítulo.", Toast.LENGTH_SHORT).show();
                 }else{
-                    id_N = adapter.mostrarId(item.getGroupId());
-                    id_capP = adapter.mostrarId_P(item.getGroupId());
+                    if(fecha == "true"){
+                        id_N = adapter.mostrarId(item.getGroupId());
+                        id_capP = adapter.mostrarId_P(item.getGroupId());
 
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putString("id_nov",id_N);
-                    bundle2.putString("id_cap",id_capP);
-                    capitulo = new CapituloFragment();
-                    capitulo.setArguments(bundle2);
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putString("id_nov",id_N);
+                        bundle2.putString("id_cap",id_capP);
+                        capitulo = new CapituloFragment();
+                        capitulo.setArguments(bundle2);
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                    }else{
+                        interstitialAd.show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                id_N = adapter.mostrarId(item.getGroupId());
+                                id_capP = adapter.mostrarId_P(item.getGroupId());
+
+                                Bundle bundle2 = new Bundle();
+                                bundle2.putString("id_nov",id_N);
+                                bundle2.putString("id_cap",id_capP);
+                                capitulo = new CapituloFragment();
+                                capitulo.setArguments(bundle2);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                            }
+                        }, 200);
+                    }
                 }
                 return true;
 

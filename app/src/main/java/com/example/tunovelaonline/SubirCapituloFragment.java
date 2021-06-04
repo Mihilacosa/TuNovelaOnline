@@ -1,5 +1,7 @@
 package com.example.tunovelaonline;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.tunovelaonline.pojos.Capitulo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -25,8 +30,9 @@ public class SubirCapituloFragment extends Fragment {
 
     EditText titulo, num_cap, contenido;
     Button enviar;
-    private String id_novela;
+    private String id_novela, fecha;
     Capitulo capitulo;
+    private AdView mAdView;
 
     View view;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,6 +45,20 @@ public class SubirCapituloFragment extends Fragment {
 
         Bundle bundle = this.getArguments();
         id_novela = bundle.getString("id");
+
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        if(mAuth.getCurrentUser() != null){
+            SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+            fecha = datos_usu.getString("suscripcion", "");
+        }
+
+        mAdView = view.findViewById(R.id.adViewSC1);
+        if(fecha != "true"){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
+        }
 
         enviar.setOnClickListener(new View.OnClickListener() {
             @Override

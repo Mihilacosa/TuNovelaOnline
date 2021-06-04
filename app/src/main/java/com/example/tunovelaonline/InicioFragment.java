@@ -3,8 +3,10 @@ package com.example.tunovelaonline;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +20,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tunovelaonline.pojos.Novela;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.DataInputStream;
@@ -49,6 +53,7 @@ public class InicioFragment extends Fragment {
     CapituloFragment capitulo;
     TextView name;
     Context contexto;
+    private InterstitialAd interstitialAd;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -57,17 +62,22 @@ public class InicioFragment extends Fragment {
         equipoServidor = getString(R.string.ip_server);
         contexto = container.getContext();
         new Thread(new Cargar()).start();
-
+        loadInterstitialAd();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             usuario = datos_usu.getString("usuario", "");
             id_usuario = datos_usu.getString("id", "");
             fecha = datos_usu.getString("suscripcion", "");
-
         }
 
         return view;
+    }
+
+    private void loadInterstitialAd() {
+        interstitialAd = new InterstitialAd(getActivity());
+        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/3419835294");
+        interstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     class Cargar implements Runnable {
@@ -101,13 +111,27 @@ public class InicioFragment extends Fragment {
                         adapter.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
-
-                                Bundle bundle = new Bundle();
-                                bundle.putString("id",id_N);
-                                novela = new NovelaFragment();
-                                novela.setArguments(bundle);
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).addToBackStack( "tag" ).commit();
+                                if(fecha == "true"){
+                                    id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("id",id_N);
+                                    novela = new NovelaFragment();
+                                    novela.setArguments(bundle);
+                                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).addToBackStack( "tag" ).commit();
+                                }else{
+                                    interstitialAd.show();
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("id",id_N);
+                                            novela = new NovelaFragment();
+                                            novela.setArguments(bundle);
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,novela).addToBackStack( "tag" ).commit();
+                                        }
+                                    }, 200);
+                                }
                             }
                         });
                         recyclerNovelas.setAdapter(adapter);
@@ -153,7 +177,22 @@ public class InicioFragment extends Fragment {
                         SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = datos_usu.edit();
 
-                        editor.putString("suscripcion", date.toString());
+                        if(fecha.length() > 2){
+                            try {
+                                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                String hoy = simpleDateFormat.format(new Date());
+                                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
+
+                                if(hoyFecha.before(date)){
+                                    editor.putString("suscripcion", "true");
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        editor.putString("fecha_sus", fecha);
                         editor.apply();
                     }
                 });
@@ -183,29 +222,65 @@ public class InicioFragment extends Fragment {
                 resenya.show();
                 return true;
             case 121:
-                id_N = adapter.mostrarId(item.getGroupId());
-                id_capU = adapter.mostrarId_U(item.getGroupId());
+                if(fecha == "true"){
+                    id_N = adapter.mostrarId(item.getGroupId());
+                    id_capU = adapter.mostrarId_U(item.getGroupId());
 
-                Bundle bundle = new Bundle();
-                bundle.putString("id_nov",id_N);
-                bundle.putString("id_cap",id_capU);
-                capitulo = new CapituloFragment();
-                capitulo.setArguments(bundle);
-                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("id_nov",id_N);
+                    bundle.putString("id_cap",id_capU);
+                    capitulo = new CapituloFragment();
+                    capitulo.setArguments(bundle);
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                }else{
+                    interstitialAd.show();
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            id_N = adapter.mostrarId(item.getGroupId());
+                            id_capU = adapter.mostrarId_U(item.getGroupId());
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("id_nov",id_N);
+                            bundle.putString("id_cap",id_capU);
+                            capitulo = new CapituloFragment();
+                            capitulo.setArguments(bundle);
+                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                        }
+                    }, 200);
+                }
                 return true;
             case 122:
                 if(adapter.tamano(item.getGroupId()) == 1){
                     Toast.makeText(getContext(), "Esta novela solo tiene un capítulo.", Toast.LENGTH_SHORT).show();
                 }else{
-                    id_N = adapter.mostrarId(item.getGroupId());
-                    id_capP = adapter.mostrarId_P(item.getGroupId());
+                    if(fecha == "true"){
+                        id_N = adapter.mostrarId(item.getGroupId());
+                        id_capP = adapter.mostrarId_P(item.getGroupId());
 
-                    Bundle bundle2 = new Bundle();
-                    bundle2.putString("id_nov",id_N);
-                    bundle2.putString("id_cap",id_capP);
-                    capitulo = new CapituloFragment();
-                    capitulo.setArguments(bundle2);
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                        Bundle bundle2 = new Bundle();
+                        bundle2.putString("id_nov",id_N);
+                        bundle2.putString("id_cap",id_capP);
+                        capitulo = new CapituloFragment();
+                        capitulo.setArguments(bundle2);
+                        getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                    }else{
+                        interstitialAd.show();
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                id_N = adapter.mostrarId(item.getGroupId());
+                                id_capP = adapter.mostrarId_P(item.getGroupId());
+
+                                Bundle bundle2 = new Bundle();
+                                bundle2.putString("id_nov",id_N);
+                                bundle2.putString("id_cap",id_capP);
+                                capitulo = new CapituloFragment();
+                                capitulo.setArguments(bundle2);
+                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                            }
+                        }, 200);
+                    }
                 }
                 return true;
 

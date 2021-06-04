@@ -46,7 +46,10 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -64,6 +67,7 @@ public class LoginFragment extends Fragment {
     private FirebaseAuth mAuth;
     CheckBox humano;
     Context contexto;
+    Date date;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_login, container, false);
@@ -208,7 +212,22 @@ public class LoginFragment extends Fragment {
                         editor.putString("id", usuario.getIdUsuario().toString());
                         editor.putString("email", usuario.getEmail());
                         editor.putString("imagen", usuario.getImagen());
-                        editor.putString("suscripcion", String.valueOf(usuario.getSuscripcion()));
+                        if(String.valueOf(usuario.getSuscripcion()).length() > 2){
+                            try {
+                                date = new SimpleDateFormat("yyyy-MM-dd").parse(String.valueOf(usuario.getSuscripcion()));
+
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                String hoy = simpleDateFormat.format(new Date());
+                                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
+
+                                if(hoyFecha.before(date)){
+                                    editor.putString("suscripcion", "true");
+                                }
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        editor.putString("fecha_sus", String.valueOf(usuario.getSuscripcion()));
                         editor.putString("tamano", String.valueOf(usuario.getTamanoLetra()));
                         editor.putString("font", usuario.getFontLetra());
                         editor.putString("color", usuario.getTema());

@@ -27,8 +27,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginBottom="6dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
+            android:paddingLeft="150dp"
+            android:paddingRight="150dp">
 
 
             <TextView
@@ -86,8 +86,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginBottom="18dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
+            android:paddingLeft="150dp"
+            android:paddingRight="150dp">
 
 
             <TextView
@@ -116,8 +116,8 @@
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="18dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginLeft="150dp"
+            android:layout_marginRight="150dp"
             ads:adSize="SMART_BANNER"
             ads:adUnitId="ca-app-pub-3940256099942544/6300978111"></com.google.android.gms.ads.AdView>
 
@@ -126,8 +126,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginBottom="6dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
+            android:paddingLeft="150dp"
+            android:paddingRight="150dp">
 
 
             <TextView
@@ -192,9 +192,9 @@
             android:layout_height="wrap_content"
             app:backgroundTint="@color/purple_500"
             android:textColor="#FFFFFF"
-            android:layout_marginLeft="50dp"
+            android:layout_marginLeft="150dp"
             android:layout_marginTop="25dp"
-            android:layout_marginRight="50dp"
+            android:layout_marginRight="150dp"
             android:layout_marginBottom="25dp"
             android:text="Guardar" />
 
@@ -203,8 +203,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_marginBottom="6dp"
-            android:paddingLeft="50dp"
-            android:paddingRight="50dp">
+            android:paddingLeft="150dp"
+            android:paddingRight="150dp">
 
 
             <TextView
@@ -227,8 +227,8 @@
             android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp">
+            android:layout_marginLeft="140dp"
+            android:layout_marginRight="140dp">
 
             <TextView
                 android:id="@+id/text_ejemplo"

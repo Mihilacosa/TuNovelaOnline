@@ -34,6 +34,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.tunovelaonline.pojos.Capitulo;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import org.json.JSONArray;
@@ -72,6 +74,8 @@ public class CapituloFragment extends Fragment {
     Button opciones;
     TextView contenido;
     Boolean marcado = false;
+    private AdView mAdView, mAdView2;
+    Boolean suscrito = false;
 
     private String usuario = "";
     private FirebaseAuth mAuth;
@@ -84,7 +88,7 @@ public class CapituloFragment extends Fragment {
     TextView tamano_letra;
     ConstraintLayout content;
 
-    String tamano,font,color,id_usuario;
+    String tamano,font,color,id_usuario, fecha;
     String colorFondo, fontSpinner;
     Integer tam_letra = 14;
 
@@ -108,8 +112,20 @@ public class CapituloFragment extends Fragment {
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             id_usuario = datos_usu.getString("id", "");
+            fecha = datos_usu.getString("suscripcion", "");
 
             new Thread(new ComprobarMarca()).start();
+        }
+
+        mAdView = v.findViewById(R.id.adViewC1);
+        mAdView2 = v.findViewById(R.id.adViewC2);
+        if(fecha != "true"){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+            mAdView2.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
+            mAdView2.setVisibility(View.GONE);
         }
 
         SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);

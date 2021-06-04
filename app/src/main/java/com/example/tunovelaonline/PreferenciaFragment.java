@@ -26,6 +26,8 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.tunovelaonline.pojos.Usuario;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.DataOutputStream;
@@ -40,7 +42,7 @@ public class PreferenciaFragment extends Fragment {
     int puertoServidor = 30500;
     Socket socketCliente;
 
-    String tamano,font,color,id_usuario;
+    String tamano,font,color,id_usuario, fecha;
     String colorFondo, fontSpinner;
     Integer tam_letra;
 
@@ -48,6 +50,7 @@ public class PreferenciaFragment extends Fragment {
     TextView tamano_letra,text_ejemplo;
     android.widget.Spinner spinner;
     Button menos,mas,blanco,oscuro,crema,enviar;
+    private AdView mAdView;
 
     View view;
     Context contexto;
@@ -75,6 +78,7 @@ public class PreferenciaFragment extends Fragment {
             tamano = datos_usu.getString("tamano", "");
             font = datos_usu.getString("font", "");
             color = datos_usu.getString("color", "");
+            fecha = datos_usu.getString("suscripcion", "");
 
             tam_letra = Integer.valueOf(tamano);
             tamano_letra.setText(tamano);
@@ -82,6 +86,14 @@ public class PreferenciaFragment extends Fragment {
             que_font(font);
             colorFondo = color;
             color_fondo(color);
+        }
+
+        mAdView = view.findViewById(R.id.adViewP1);
+        if(fecha != "true"){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
         }
 
         menos.setOnClickListener(new View.OnClickListener() {

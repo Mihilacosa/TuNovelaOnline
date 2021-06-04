@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import java.util.Iterator;
 
 public class NovelaFragment extends Fragment {
@@ -67,7 +70,6 @@ public class NovelaFragment extends Fragment {
     private ArrayList<Capitulo> Lista = new ArrayList<>();
     private String id_capitulo;
     private String id_novela;
-    Boolean suscrito = false;
     ImageView marc;
     Integer cambio_marc = 0;
     View v;
@@ -79,6 +81,7 @@ public class NovelaFragment extends Fragment {
     TextView tit_alt, autor, artista, traductor, genero, fecha;
     private AdView mAdView;
     FirebaseAuth mAuth;
+    private InterstitialAd interstitialAd;
 
     private  String usuario = "";
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -90,7 +93,7 @@ public class NovelaFragment extends Fragment {
         traductor = v.findViewById(R.id.Novela_traductor);
         genero = v.findViewById(R.id.Novela_genero);
         fecha = v.findViewById(R.id.Novela_fecha);
-
+        loadInterstitialAd();
         desplegable = v.findViewById(R.id.desplegable);
         Adesplegar = v.findViewById(R.id.Adesplegar);
         Adesplegar.setVisibility(View.GONE);
@@ -116,25 +119,12 @@ public class NovelaFragment extends Fragment {
             usuario = datos_usu.getString("usuario", "");
             fecha_sus = datos_usu.getString("suscripcion", "");
 
-            try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha_sus);
-
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String hoy = simpleDateFormat.format(new Date());
-                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
-
-                if(hoyFecha.before(date)){
-                    suscrito = true;
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
         } else {
             marc.setVisibility(View.GONE);
         }
 
         mAdView = v.findViewById(R.id.adView);
-        if(suscrito == false){
+        if(fecha_sus != "true"){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }else{
@@ -184,7 +174,11 @@ public class NovelaFragment extends Fragment {
 
         return v;
     }
-
+    private void loadInterstitialAd() {
+        interstitialAd = new InterstitialAd(getActivity());
+        interstitialAd.setAdUnitId("ca-app-pub-3940256099942544/3419835294");
+        interstitialAd.loadAd(new AdRequest.Builder().build());
+    }
     //carga novela y capitulos
 
     class CargarNovela implements Runnable {
@@ -288,14 +282,32 @@ public class NovelaFragment extends Fragment {
                         adapter.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getIdCapitulo().toString();
+                                if(fecha_sus == "true"){
+                                    id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getIdCapitulo().toString();
 
-                                Bundle bundle = new Bundle();
-                                bundle.putString("id_nov",id_novela);
-                                bundle.putString("id_cap",id_capitulo);
-                                CapituloFragment capitulo = new CapituloFragment();
-                                capitulo.setArguments(bundle);
-                                getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("id_nov",id_novela);
+                                    bundle.putString("id_cap",id_capitulo);
+                                    CapituloFragment capitulo = new CapituloFragment();
+                                    capitulo.setArguments(bundle);
+                                    getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+
+                                }else{
+                                    interstitialAd.show();
+                                    new Handler().postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getIdCapitulo().toString();
+
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("id_nov",id_novela);
+                                            bundle.putString("id_cap",id_capitulo);
+                                            CapituloFragment capitulo = new CapituloFragment();
+                                            capitulo.setArguments(bundle);
+                                            getFragmentManager().beginTransaction().replace(R.id.fragment_container,capitulo).addToBackStack( "tag" ).commit();
+                                        }
+                                    }, 200);
+                                }
                             }
                         });
 

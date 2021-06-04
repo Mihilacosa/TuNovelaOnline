@@ -50,6 +50,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.tunovelaonline.pojos.Capitulo;
 import com.example.tunovelaonline.pojos.Novela;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.picasso.Picasso;
 
@@ -104,11 +106,12 @@ public class SubirNovelaFragment extends Fragment {
     TextView contenido_cap;
     Button enviar;
     ScrollView scrollNovela;
-    String extension = ".png";
+    String extension = ".png", fecha;
 
     RequestQueue requestQueue;
     View v;
     Context contexto;
+    private AdView mAdView, mAdView2, mAdView3;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_subir_novela, container, false);
@@ -138,9 +141,21 @@ public class SubirNovelaFragment extends Fragment {
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             usuario = datos_usu.getString("usuario", "");
             id_usuario = datos_usu.getString("id", "");
-            if (!usuario.equals("")) {
-                //setTitle("Hola " + usuario);
-            }
+            fecha = datos_usu.getString("suscripcion", "");
+        }
+
+        mAdView = v.findViewById(R.id.adViewSN1);
+        mAdView2 = v.findViewById(R.id.adViewSN2);
+        mAdView3 = v.findViewById(R.id.adViewSN3);
+        if(fecha != "true"){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+            mAdView2.loadAd(adRequest);
+            mAdView3.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
+            mAdView2.setVisibility(View.GONE);
+            mAdView3.setVisibility(View.GONE);
         }
 
         //registerForContextMenu(findViewById(R.id.main));

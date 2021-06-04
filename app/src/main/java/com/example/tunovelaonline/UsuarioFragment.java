@@ -36,6 +36,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.example.tunovelaonline.pojos.Usuario;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
@@ -92,7 +94,7 @@ public class UsuarioFragment extends Fragment {
             .merchantName("Tu Novela Online");
 
     String usuario = "";
-    String id_usuario, usu_email, imagen_fire, fecha;
+    String id_usuario, usu_email, imagen_fire, fecha, fecha_sus;
     View view;
     EditText usuarioNuevo, emailNuevo, cont_act, cont_nueva, cont_rep;
     ImageView paypal,imagen_usu;
@@ -107,6 +109,7 @@ public class UsuarioFragment extends Fragment {
     String imagename;
     String extension = ".png";
     Context contexto;
+    private AdView mAdView;
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_usuario, container, false);
@@ -129,21 +132,12 @@ public class UsuarioFragment extends Fragment {
             id_usuario = datos_usu.getString("id", "");
             usu_email = datos_usu.getString("email", "");
             imagen_fire = datos_usu.getString("imagen", "");
+            fecha_sus = datos_usu.getString("fecha_sus", "");
             fecha = datos_usu.getString("suscripcion", "");
 
-            try {
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
-                
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-                String hoy = simpleDateFormat.format(new Date());
-                Date hoyFecha = new SimpleDateFormat("yyyy-MM-dd").parse(hoy);
-
-                if(hoyFecha.before(date)){
-                    paypal.setVisibility(View.GONE);
-                    textSuscripcion.setText("Suscripción hasta: " + fecha);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+            if(fecha == "true"){
+                paypal.setVisibility(View.GONE);
+                textSuscripcion.setText("Suscripción hasta: " + fecha_sus);
             }
 
             usuarioNuevo.setText(usuario);
@@ -161,6 +155,14 @@ public class UsuarioFragment extends Fragment {
                 },500); // milliseconds: 1 seg.
             }
 
+        }
+
+        mAdView = view.findViewById(R.id.adViewU1);
+        if(fecha != "true"){
+            AdRequest adRequest = new AdRequest.Builder().build();
+            mAdView.loadAd(adRequest);
+        }else{
+            mAdView.setVisibility(View.GONE);
         }
 
         imagen.setOnClickListener(new View.OnClickListener() {
@@ -375,8 +377,6 @@ public class UsuarioFragment extends Fragment {
                 DataInputStream dis2 = new DataInputStream(is2);
                 fecha = dis2.readUTF();
 
-                date = new SimpleDateFormat("yyyy-MM-dd").parse(fecha);
-
                 os.close();
                 dos.close();
 
@@ -385,18 +385,16 @@ public class UsuarioFragment extends Fragment {
                     @Override
                     public void run() {
                         paypal.setVisibility(View.GONE);
-                        textSuscripcion.setText("Suscripción hasta: " + date.toString());
+                        textSuscripcion.setText("Suscripción hasta: " + fecha);
                         SharedPreferences datos_usu = contexto.getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = datos_usu.edit();
 
-                        editor.putString("suscripcion", date.toString());
+                        editor.putString("suscripcion", fecha);
                         editor.apply();
                     }
                 });
 
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
                 e.printStackTrace();
             }
         }
