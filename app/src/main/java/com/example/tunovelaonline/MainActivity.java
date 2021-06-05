@@ -176,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editor.putString("tamano", "14");
                 editor.putString("font", "Open sans");
                 editor.putString("color", "blanco");
+                editor.putString("fecha_sus", "");
+                editor.putString("suscripcion", "");
                 editor.apply();
 
                 nav_Menu.findItem(R.id.login).setVisible(true);

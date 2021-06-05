@@ -58,7 +58,7 @@ import com.google.android.gms.ads.InterstitialAd;
 import java.util.Iterator;
 
 public class NovelaFragment extends Fragment {
-    String equipoServidor,fecha_sus;
+    String equipoServidor,fecha_sus = "";
     int puertoServidor = 30500;
     Socket socketCliente;
     Novela novela;
@@ -124,7 +124,7 @@ public class NovelaFragment extends Fragment {
         }
 
         mAdView = v.findViewById(R.id.adView);
-        if(fecha_sus != "true"){
+        if(fecha_sus.length() < 2){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }else{
@@ -282,7 +282,7 @@ public class NovelaFragment extends Fragment {
                         adapter.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if(fecha_sus == "true"){
+                                if(fecha_sus.length() == 4){
                                     id_capitulo = Lista.get(recyclerCapitulos.getChildAdapterPosition(v)).getIdCapitulo().toString();
 
                                     Bundle bundle = new Bundle();

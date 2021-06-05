@@ -53,7 +53,7 @@ public class SubirCapituloFragment extends Fragment {
         }
 
         mAdView = view.findViewById(R.id.adViewSC1);
-        if(fecha != "true"){
+        if(fecha.length() < 4){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }else{

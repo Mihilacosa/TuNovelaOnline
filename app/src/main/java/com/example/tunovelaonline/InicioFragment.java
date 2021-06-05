@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class InicioFragment extends Fragment {
-    String equipoServidor,id_usuario,fecha;
+    String equipoServidor,id_usuario,fecha = "";
     int puertoServidor = 30500;
     Socket socketCliente;
     Date date;
@@ -54,6 +54,7 @@ public class InicioFragment extends Fragment {
     TextView name;
     Context contexto;
     private InterstitialAd interstitialAd;
+    FirebaseAuth mAuth;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class InicioFragment extends Fragment {
         contexto = container.getContext();
         new Thread(new Cargar()).start();
         loadInterstitialAd();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = this.getActivity().getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
             usuario = datos_usu.getString("usuario", "");
@@ -101,7 +102,7 @@ public class InicioFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (fecha == "") {
+                        if (fecha.length() < 4 && mAuth.getCurrentUser() != null) {
                             new Thread(new FechaSuscripcion()).start();
                         }
                         recyclerNovelas = view.findViewById(R.id.ReyclerId);
@@ -111,7 +112,7 @@ public class InicioFragment extends Fragment {
                         adapter.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                if(fecha == "true"){
+                                if(fecha.length() == 4){
                                     id_N = listaNovelas.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
                                     Bundle bundle = new Bundle();
                                     bundle.putString("id",id_N);
@@ -222,7 +223,7 @@ public class InicioFragment extends Fragment {
                 resenya.show();
                 return true;
             case 121:
-                if(fecha == "true"){
+                if(fecha.length() == 4){
                     id_N = adapter.mostrarId(item.getGroupId());
                     id_capU = adapter.mostrarId_U(item.getGroupId());
 
@@ -254,7 +255,7 @@ public class InicioFragment extends Fragment {
                 if(adapter.tamano(item.getGroupId()) == 1){
                     Toast.makeText(getContext(), "Esta novela solo tiene un capítulo.", Toast.LENGTH_SHORT).show();
                 }else{
-                    if(fecha == "true"){
+                    if(fecha.length() == 4){
                         id_N = adapter.mostrarId(item.getGroupId());
                         id_capP = adapter.mostrarId_P(item.getGroupId());
 

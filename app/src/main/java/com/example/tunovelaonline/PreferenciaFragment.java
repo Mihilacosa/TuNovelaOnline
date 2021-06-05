@@ -89,7 +89,7 @@ public class PreferenciaFragment extends Fragment {
         }
 
         mAdView = view.findViewById(R.id.adViewP1);
-        if(fecha != "true"){
+        if(fecha.length() < 4){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }else{

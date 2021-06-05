@@ -88,7 +88,7 @@ public class CapituloFragment extends Fragment {
     TextView tamano_letra;
     ConstraintLayout content;
 
-    String tamano,font,color,id_usuario, fecha;
+    String tamano,font,color,id_usuario, fecha = "";
     String colorFondo, fontSpinner;
     Integer tam_letra = 14;
 
@@ -119,7 +119,7 @@ public class CapituloFragment extends Fragment {
 
         mAdView = v.findViewById(R.id.adViewC1);
         mAdView2 = v.findViewById(R.id.adViewC2);
-        if(fecha != "true"){
+        if(fecha.length() < 2){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
             mAdView2.loadAd(adRequest);

@@ -147,7 +147,7 @@ public class SubirNovelaFragment extends Fragment {
         mAdView = v.findViewById(R.id.adViewSN1);
         mAdView2 = v.findViewById(R.id.adViewSN2);
         mAdView3 = v.findViewById(R.id.adViewSN3);
-        if(fecha != "true"){
+        if(fecha.length() < 4){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
             mAdView2.loadAd(adRequest);

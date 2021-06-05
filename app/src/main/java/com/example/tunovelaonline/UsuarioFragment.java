@@ -135,7 +135,7 @@ public class UsuarioFragment extends Fragment {
             fecha_sus = datos_usu.getString("fecha_sus", "");
             fecha = datos_usu.getString("suscripcion", "");
 
-            if(fecha == "true"){
+            if(fecha.length() == 4){
                 paypal.setVisibility(View.GONE);
                 textSuscripcion.setText("Suscripción hasta: " + fecha_sus);
             }
@@ -158,7 +158,7 @@ public class UsuarioFragment extends Fragment {
         }
 
         mAdView = view.findViewById(R.id.adViewU1);
-        if(fecha != "true"){
+        if(fecha.length() < 2){
             AdRequest adRequest = new AdRequest.Builder().build();
             mAdView.loadAd(adRequest);
         }else{

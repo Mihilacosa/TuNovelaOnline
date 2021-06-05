@@ -129,7 +129,7 @@ public class BusquedaFragment extends Fragment {
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(fecha == "true"){
+                if(fecha.length() == 4){
                     id_N = lista.get(recyclerNovelas.getChildAdapterPosition(v)).getIdNovela().toString();
 
                     Bundle bundle = new Bundle();
@@ -223,7 +223,7 @@ public class BusquedaFragment extends Fragment {
                 resenya.show();
                 return true;
             case 121:
-                if(fecha == "true"){
+                if(fecha.length() == 4){
                     id_N = adapter.mostrarId(item.getGroupId());
                     id_capU = adapter.mostrarId_U(item.getGroupId());
 
@@ -255,7 +255,7 @@ public class BusquedaFragment extends Fragment {
                 if(adapter.tamano(item.getGroupId()) == 1){
                     Toast.makeText(getContext(), "Esta novela solo tiene un capítulo.", Toast.LENGTH_SHORT).show();
                 }else{
-                    if(fecha == "true"){
+                    if(fecha.length() == 4){
                         id_N = adapter.mostrarId(item.getGroupId());
                         id_capP = adapter.mostrarId_P(item.getGroupId());
 
