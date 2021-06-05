@@ -179,7 +179,7 @@ public class ModificarNovelasFragment extends Fragment {
                                                 };
 
                                                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                                                builder.setMessage("Estasn seguro de eliminar la novela?").setPositiveButton("Si", dialogClickListener)
+                                                builder.setMessage("Estas seguro de eliminar la novela?").setPositiveButton("Si", dialogClickListener)
                                                         .setNegativeButton("No", dialogClickListener).show();
                                             }
                                             else if (options[item].equals("Cancelar")) {

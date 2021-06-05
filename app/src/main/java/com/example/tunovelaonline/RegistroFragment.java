@@ -178,7 +178,7 @@ public class RegistroFragment extends Fragment {
                             public void run() {
                                 new Thread(new EnvioLogin()).start();
                             }
-                        }, 1000);
+                        }, 100);
                     }
                 });
 

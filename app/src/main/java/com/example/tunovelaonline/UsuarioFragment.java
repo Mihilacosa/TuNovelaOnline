@@ -98,7 +98,7 @@ public class UsuarioFragment extends Fragment {
     View view;
     EditText usuarioNuevo, emailNuevo, cont_act, cont_nueva, cont_rep;
     ImageView paypal,imagen_usu;
-    Button enviar,imagen;
+    Button enviar,imagen,eliminar;
     String usu,email,contAct = "",cont,cont2;
     Boolean usuDif = false, emailDif = false, boton_imagen = false;
     TextView textSuscripcion;
@@ -182,6 +182,7 @@ public class UsuarioFragment extends Fragment {
         initPaymentService();
 
         enviar = view.findViewById(R.id.btnEnviar_usuario);
+        eliminar = view.findViewById(R.id.btnEliminar_usuario);
 
         enviar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +243,48 @@ public class UsuarioFragment extends Fragment {
                     }
                     new Thread(new CambioDatosUsuario()).start();
                 }
+            }
+        });
+
+        eliminar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                if (user != null) {
+                                    user.delete().addOnCompleteListener(new OnCompleteListener() {
+                                        @Override
+                                        public void onComplete(@NonNull Task task) {
+                                            if (task.isSuccessful()) {
+                                                Toast.makeText(getContext(), "El usaurio se ha eliminado", Toast.LENGTH_SHORT).show();
+
+                                                new Thread(new EliminarUsuario()).start();
+                                                Intent i = new Intent(getContext(), MainActivity.class);
+                                                startActivity(i);
+
+                                            } else {
+                                                Toast.makeText(getContext(), "Error al eliminar el usaurio", Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+                                }
+
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setMessage("Estas seguro de eliminar el usaurio?").setPositiveButton("Si", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
             }
         });
 
@@ -306,6 +349,27 @@ public class UsuarioFragment extends Fragment {
                 }
             }
         });
+    }
+
+    class EliminarUsuario implements Runnable {
+        @Override
+        public void run() {
+            try {
+                socketCliente = new Socket(equipoServidor, puertoServidor);
+                OutputStream os = socketCliente.getOutputStream();
+                DataOutputStream dos = new DataOutputStream(os);
+                dos.writeUTF("eliminar usuario");
+
+                dos.writeUTF(id_usuario);
+
+                os.close();
+                dos.close();
+
+                socketCliente.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     class CambioDatosUsuario implements Runnable {

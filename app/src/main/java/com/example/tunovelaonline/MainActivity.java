@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.nav_view);
 
         v = navigationView.getHeaderView(0);
-
+        nav_Menu = navigationView.getMenu();
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         if(mAuth.getCurrentUser() != null){
             SharedPreferences datos_usu = getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     Picasso.get().load(imagen_fire).noPlaceholder().centerCrop().fit().into(imagen);
                 }
 
-                nav_Menu = navigationView.getMenu();
-
                 nav_Menu.findItem(R.id.login).setVisible(false);
                 nav_Menu.findItem(R.id.registro).setVisible(false);
                 nav_Menu.findItem(R.id.logout).setVisible(true);
@@ -84,6 +82,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 nav_Menu.findItem(R.id.confpreferencias).setVisible(true);
                 nav_Menu.findItem(R.id.marcapaginas).setVisible(true);
             }
+        }else{
+            SharedPreferences datos_usu = getSharedPreferences("usuario_login", Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = datos_usu.edit();
+
+            editor.putString("tamano", "14");
+            editor.putString("font", "Open sans");
+            editor.putString("color", "blanco");
+            editor.putString("fecha_sus", "");
+            editor.putString("suscripcion", "");
+            editor.apply();
+
+            nav_Menu.findItem(R.id.login).setVisible(true);
+            nav_Menu.findItem(R.id.registro).setVisible(true);
+            nav_Menu.findItem(R.id.logout).setVisible(false);
+            nav_Menu.findItem(R.id.subir_novela).setVisible(false);
+            nav_Menu.findItem(R.id.confUsuario).setVisible(false);
+            nav_Menu.findItem(R.id.modificar).setVisible(false);
+            nav_Menu.findItem(R.id.confpreferencias).setVisible(false);
+            nav_Menu.findItem(R.id.marcapaginas).setVisible(false);
         }
 
         if(!log){
