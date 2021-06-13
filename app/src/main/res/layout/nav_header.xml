@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="176dp"
+    android:layout_height="wrap_content"
     android:background="@color/purple_500"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/usuInfo"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="176dp"
         android:gravity="bottom"
         android:orientation="vertical"
         android:padding="16dp"
@@ -41,22 +41,22 @@
     <LinearLayout
         android:id="@+id/nav_title"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="186dp"
         android:gravity="bottom"
         android:orientation="vertical"
         android:padding="16dp"
         android:visibility="visible">
 
         <ImageView
-            android:layout_width="96dp"
+            android:layout_width="120dp"
             android:layout_height="96dp"
-            android:layout_marginTop="4dp"
-            android:src="@drawable/ic_libro" />
+            android:layout_marginTop="6dp"
+            android:src="@drawable/logo" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="4dp"
+            android:paddingTop="2dp"
             android:text="Tu Novela Online"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textSize="18sp" />
