@@ -46,7 +46,7 @@ public class BusquedaFragment extends Fragment {
     AdaptadorNovelas adapter;
     EditText barra;
     CapituloFragment capitulo;
-    String id_N,id_capU, id_capP, fecha;
+    String id_N,id_capU, id_capP, fecha = "";
     private InterstitialAd interstitialAd;
 
     NovelaFragment novela;
